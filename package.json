@@ -4,7 +4,7 @@
   "description": "Simple engine for expert systems",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/m-onyshchuk/stugna/issues"
   },
-  "homepage": "https://github.com/m-onyshchuk/stugna#readme"
+  "homepage": "https://github.com/m-onyshchuk/stugna#readme",
+  "devDependencies": {
+    "jest": "^29.0.3"
+  }
 }
