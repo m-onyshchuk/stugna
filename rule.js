@@ -49,6 +49,15 @@ const TOKEN_PARENTHESIS = 'parenthesis';
 
 const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;
+const CHAR_CODE_MINUS = 45;
+
+function hasMinus(str) {
+  if (!str) {
+    return false;
+  }
+  let code = str.charCodeAt(0);
+  return code === CHAR_CODE_MINUS;
+}
 
 function mayBeNumber(str) {
   if (!str) {
@@ -181,11 +190,16 @@ class Rule {
               type = TOKEN_OPERATOR;
             }
           } else {
+            let sign = 1;
+            if (hasMinus(part) && part.length > 1) {
+              part = part.substring(1);
+              sign = -1;
+            }
             if (mayBeNumber(part)) {
               if (mayBeFloat(part)) {
-                part = parseFloat(part);
+                part = sign*parseFloat(part);
               } else {
-                part = parseInt(part);
+                part = sign*parseInt(part);
               }
               type = TOKEN_NUMBER;
             } else {
