@@ -16,13 +16,12 @@ kb.factAdd({
   value: 10,
   description: "A few students came"
 });
-let facts = kb.factsAll();
-console.log('state-1: ', facts);
 
 kb.factAdd({
   name: "students",
   value: 18,
   description: "A lot of students came"
 });
-facts = kb.factsAll();
-console.log('state-2: ', facts);
+
+let facts = kb.factsAll();
+console.log(facts);
