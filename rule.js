@@ -2,13 +2,13 @@
 const OPERATORS = {
   '(' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
   ')' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
-  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a < b } },
-  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a > b } },
-  '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a === b } },
-  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a !== b } },
-  'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a && b } },
-  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a || b } },
-  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a } }
+  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name < b.name } },
+  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name > b.name } },
+  '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name === b.name } },
+  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name !== b.name } },
+  'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name && b.name } },
+  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name || b.name } },
+  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a.name } }
 }
 
 /**
@@ -355,10 +355,13 @@ class Rule {
 
         case TOKEN_OPERATOR:
           let operator = OPERATORS[token.name];
-          let a = stack.pop();
+          let a = null;
           let b = null;
           if (operator.arg_count === 2) {
             b = stack.pop();
+            a = stack.pop();
+          } else {
+            a = stack.pop();
           }
           let c = operator.calc(a, b);
           stack.push(c);

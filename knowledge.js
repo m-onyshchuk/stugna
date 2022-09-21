@@ -23,8 +23,13 @@ class Knowledge {
    * @returns {null}
    */
   factAdd({name, value, description}) {
-    let fact = new Fact(name, value, description);
-    this.facts[name] = fact;
+    let factNew = new Fact(name, value, description);
+    let factOld = this.facts[name];
+    if (factOld) {
+      factOld.history.push(description);
+      factNew.history = factOld.history;
+    }
+    this.facts[name] = factNew;
     return this.regularize();
   }
 
@@ -73,8 +78,16 @@ class Knowledge {
       let factsChanged = 0;
       for (let rule of this.rules) {
         if (rule.check(this.facts)) {
-          let fact = new Fact(rule.fact, rule.value, rule.description);
-          this.facts[rule.fact] = fact;
+          let factNew = new Fact(rule.fact, rule.value, rule.description);
+          let factOld = this.facts[rule.fact];
+          if (factOld) {
+            if (factOld.value === factNew.value) {
+              continue; // there are no changes
+            }
+            factOld.history.push(rule.description);
+            factNew.history = factOld.history;
+          }
+          this.facts[rule.fact] = factNew;
           this.events.push(rule.description);
           factsChanged++;
         }
