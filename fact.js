@@ -1,4 +1,16 @@
 'use strict';
+
+/**
+ * @property {string} name - fact name
+ * @property {number|string} value - fact value
+ * @property {string} description - fact description
+ */
+class FactData {
+  name;
+  value;
+  description;
+}
+
 /**
  *
  */
@@ -13,9 +25,12 @@ class Fact {
   constructor(name, value, description) {
     // init
     this.name = name;
-    this.value = value
-    this.log = [description];
+    this.value = value;
+    if (!description) {
+      description = 'fact created (1)';
+    }
+    this.history = [description];
   }
 }
 
-module.exports = {Fact}
+module.exports = {FactData, Fact}

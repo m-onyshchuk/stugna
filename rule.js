@@ -1,14 +1,14 @@
 'use strict';
 const OPERATORS = {
-  '(' :   {priority: 3, arg_count: 2, left_associativity: 1},
-  ')' :   {priority: 3, arg_count: 2, left_associativity: 1},
-  '<' :   {priority: 2, arg_count: 2, left_associativity: 1},
-  '>' :   {priority: 2, arg_count: 2, left_associativity: 1},
-  '=' :   {priority: 2, arg_count: 2, left_associativity: 1},
-  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1},
-  'AND' : {priority: 1, arg_count: 2, left_associativity: 1},
-  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1},
-  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0}
+  '(' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+  ')' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a < b } },
+  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a > b } },
+  '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a === b } },
+  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a !== b } },
+  'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a && b } },
+  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a || b } },
+  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a } }
 }
 
 /**
@@ -97,7 +97,7 @@ class Rule {
     this.tokens = null;             // parsed rule tokens
     this.calc = null;               // reverse polish notation for rule condition calculation
     this.error = null;              // rule`s error
-    this.vars = [];                 // variables list from rule
+    this.variables = [];            // variables list from rule
 
     this.validate();
     this.tokenize(condition);
@@ -306,11 +306,11 @@ class Rule {
       return;
     }
 
-    this.vars = [];
+    this.variables = [];
     if (this.calc) {
       for (let token of this.calc) {
         if (token.type === TOKEN_VARIABLE) {
-          this.vars.push(token.name);
+          this.variables.push(token.name);
         }
       }
     }
@@ -326,6 +326,58 @@ class Rule {
       str = this.calc.map(token => token.name).join(' ');
     }
     return str;
+  }
+
+  check (facts) {
+    // 1) check wanted variables
+    for (let variable of this.variables) {
+      if (facts[variable] === undefined) {
+        return false; // rule variable is absent, break rule checking
+      }
+    }
+
+    // 2) calc reverse polish notation
+    let stack = [];
+    for (let item of this.calc) {
+      let token = Object.assign({}, item);
+      switch (token.type) {
+        case TOKEN_NUMBER:
+        case TOKEN_STRING:
+          stack.push(token);
+          break;
+
+        case TOKEN_VARIABLE:
+          let name = token.name;
+          let value = facts[name].value;
+          token.name = value;
+          stack.push(token);
+          break;
+
+        case TOKEN_OPERATOR:
+          let operator = OPERATORS[token.name];
+          let a = stack.pop();
+          let b = null;
+          if (operator.arg_count === 2) {
+            b = stack.pop();
+          }
+          let c = operator.calc(a, b);
+          stack.push(c);
+          break;
+
+        default:
+          // error
+          return false;
+      }
+    }
+
+    let result = false;
+    if (stack.length === 1) {
+      result = stack[0];
+    } else {
+      // error
+    }
+
+    return result;
   }
 }
 
