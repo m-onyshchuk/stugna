@@ -1,6 +1,6 @@
 'use strict';
-const {StugnaES} = require("../stugna");
-const cases = require('./stugna-cases');
+const {StugnaES} = require("../stugna-es");
+const cases = require('./stugna-es-cases');
 
 describe('StugnaES tests', () => {
   for (let item of cases) {

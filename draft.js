@@ -1,6 +1,6 @@
 'use strict';
 
-const {StugnaES} = require("./stugna");
+const {StugnaES} = require("./stugna-es");
 
 let rules = [
   {

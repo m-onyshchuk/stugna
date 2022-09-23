@@ -1,3 +1,4 @@
+'use strict';
 
 const {StugnaES} = require("./stugna");
 let es = new StugnaES();

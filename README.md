@@ -75,7 +75,7 @@ console.log(factWanted);
 //   history: [ "rule: wheels = 4 AND motor = 'missing'" ]
 // }
 ```
-Object `factWanted` have some fields:
+Object `factWanted` has some fields:
 * name - fact name
 * value - fact value
 * history - fact history or changes reason list 
