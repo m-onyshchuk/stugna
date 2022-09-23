@@ -81,3 +81,4 @@ Object `factWanted` has some fields:
 * history - fact history or changes reason list 
 
 ## API details 
+To be continued ...
