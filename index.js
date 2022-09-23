@@ -1,48 +1,62 @@
 'use strict';
 
-const {Knowledge} = require("./knowledge");
+const {StugnaES} = require("./stugna");
 
 let rules = [
   {
-    condition: "students > 17",
-    factName: "classroom",
-    factValue: "full",
-    priority: 100,
-    description: "There are a lot of students in the classroom"
+    condition: "wheels = 4 AND motor = 'present'",
+    factName: "transport",
+    factValue: "car"
+  },
+  {
+    condition: "wheels = 2 AND motor = 'present'",
+    factName: "transport",
+    factValue: "motorcycle"
+  },
+  {
+    condition: "wheels = 4 AND motor = 'missing'",
+    factName: "transport",
+    factValue: "skateboard"
+  },
+  {
+    condition: "wheels = 2 AND motor = 'missing'",
+    factName: "transport",
+    factValue: "bike"
   }
 ];
 
 let facts = [
   {
-    name: "students",
-    value: 10,
-    description: "A few students came"
+    name: "wheels",
+    value: 4,
+    description: "This transport has 2 wheels"
   },
   {
-    name: "students",
-    value: 18,
-    description: "A lot of students came"
+    name: "motor",
+    value: "missing",
+    description: "This transport does`t have motor"
   }
 ];
 
-let kb = new Knowledge();
-kb.rulesImport(rules);
-kb.factsImport(facts);
+let es = new StugnaES();
+es.rulesImport(rules);
+es.factsImport(facts);
 
-let events = kb.eventAll();
+let events = es.eventAll();
 console.log('events', events);
 
-rules = kb.rulesAll();
+rules = es.rulesAll();
 console.log('rules', rules);
 
-facts = kb.factsAllAsArray();
+facts = es.factsAllAsArray();
 console.log('facts-array', facts);
 
-facts = kb.factsAllAsMap();
+facts = es.factsAllAsMap();
 console.log('facts-map', facts);
 
-let predecessorsWanted = kb.factGetPredecessorsWanted('classroom');
-console.log('classroom predecessors wanted', predecessorsWanted);
+let factToKnow = 'transport';
+let predecessorsWanted = es.factGetPredecessorsWanted(factToKnow);
+console.log(`${factToKnow} predecessors wanted`, predecessorsWanted);
 
-let predecessorsUnknown = kb.factGetPredecessorsUnknown('classroom');
-console.log('classroom predecessors unknown', predecessorsUnknown);
+let predecessorsUnknown = es.factGetPredecessorsUnknown(factToKnow);
+console.log(`${factToKnow} predecessors unknown`, predecessorsUnknown);

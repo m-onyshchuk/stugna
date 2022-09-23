@@ -25,6 +25,9 @@ class Fact {
   constructor(name, value, description) {
     // init
     this.name = name;
+    if (typeof value === 'string' && value.length > 1) {
+      value = value.replace(/'/g, '');
+    }
     this.value = value;
     if (!description) {
       description = 'fact created (1)';

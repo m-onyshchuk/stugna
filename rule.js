@@ -35,12 +35,14 @@ function operatorPriority(name) {
 
 // const TOKEN_UNKNOWN = 0;
 // const TOKEN_NUMBER = 1;
-// const TOKEN_STRING = 2;
-// const TOKEN_VARIABLE = 3;
-// const TOKEN_OPERATOR = 4;
-// const TOKEN_PARENTHESIS = 5;
+// const TOKEN_BOOLEAN = 2;
+// const TOKEN_STRING = 3;
+// const TOKEN_VARIABLE = 4;
+// const TOKEN_OPERATOR = 5;
+// const TOKEN_PARENTHESIS = 6;
 
 const TOKEN_UNKNOWN  = 'unknown';
+const TOKEN_BOOLEAN  = 'boolean';
 const TOKEN_NUMBER   = 'number';
 const TOKEN_STRING   = 'string';
 const TOKEN_VARIABLE = 'variable';
@@ -88,16 +90,21 @@ class Rule {
    */
   constructor(condition, factName, factValue, priority, description) {
     // init
-    this.condition = condition;     // human raw readable text of rule
+    this.condition = condition;      // human raw readable text of rule
     this.fact = factName;
     this.value = factValue;
-    this.priority = priority;
-    this.description = description; // detailed rule description
-
-    this.tokens = null;             // parsed rule tokens
-    this.calc = null;               // reverse polish notation for rule condition calculation
-    this.error = null;              // rule`s error
-    this.variables = [];            // variables list from rule
+    if (priority && priority > 0)
+      this.priority = priority;
+    else
+      this.priority = 1;
+    if (description)
+      this.description = description; // detailed rule description
+    else
+      this.description = `rule: ${condition}`;
+    this.tokens = null;              // parsed rule tokens
+    this.calc = null;                // reverse polish notation for rule condition calculation
+    this.error = null;               // rule`s error
+    this.variables = [];             // variables list from rule
 
     this.validate();
     this.tokenize(condition);
@@ -118,19 +125,6 @@ class Rule {
     }
     if (!this.value) {
       this.error = 'fact value can`t be empty';
-      return;
-    }
-    if (!Number.isInteger(this.priority)) {
-      this.error = 'rule priority must be a number';
-      return;
-    }
-    if (this.priority < 1) {
-      this.error = 'rule priority must be a positive number';
-      return;
-    }
-    if (!this.description) {
-      this.error = 'rule description can`t be empty';
-      return;
     }
   }
 
@@ -341,6 +335,7 @@ class Rule {
     for (let item of this.calc) {
       let token = Object.assign({}, item);
       switch (token.type) {
+        case TOKEN_BOOLEAN:
         case TOKEN_NUMBER:
         case TOKEN_STRING:
           stack.push(token);
@@ -363,8 +358,8 @@ class Rule {
           } else {
             a = stack.pop();
           }
-          let c = operator.calc(a, b);
-          stack.push(c);
+          let result = operator.calc(a, b);
+          stack.push({name:result, type:TOKEN_BOOLEAN});
           break;
 
         default:
@@ -375,7 +370,7 @@ class Rule {
 
     let result = false;
     if (stack.length === 1) {
-      result = stack[0];
+      result = stack[0].name;
     } else {
       // error
     }

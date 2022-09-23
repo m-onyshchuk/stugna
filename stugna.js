@@ -5,7 +5,7 @@ const {Rule} = require("./rule");
 /**
  *
  */
-class Knowledge {
+class StugnaES {
   // private fields
   #rules;
   #facts;
@@ -57,6 +57,14 @@ class Knowledge {
     if (toRegularize) {
       this.regularize();
     }
+  }
+
+  /**
+   * @param name
+   * @returns {boolean}
+   */
+  factIsKnown(name) {
+    return (this.#facts[name] !== undefined)
   }
 
   /**
@@ -133,7 +141,7 @@ class Knowledge {
   }
 
   /**
-   * @param facts {Fact[]}
+   * @param facts {object[]}
    * @param toRegularize {boolean}
    */
   factsImport(facts, toRegularize = true) {
@@ -187,10 +195,10 @@ class Knowledge {
       if (
         rule.condition !== undefined &&
         rule.factName !== undefined &&
-        rule.factValue !== undefined &&
-        rule.priority !== undefined &&
-        rule.description !== undefined
+        rule.factValue !== undefined
       ) {
+        rule.priority = rule.priority ? rule.priority : 1;
+        rule.description = rule.description ? rule.description : null;
         this.ruleAdd(rule, false);
       }
     }
@@ -236,4 +244,4 @@ class Knowledge {
   }
 }
 
-module.exports = {Knowledge}
+module.exports = {StugnaES}
