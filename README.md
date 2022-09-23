@@ -49,4 +49,35 @@ console.log(factsUnknown);
 // [ 'wheels', 'motor' ]
 ```
 
+Next we need to add wanted facts to system:
+```js
+let facts = [
+  {
+    name: "wheels",
+    value: 4,
+    description: "This transport has 2 wheels"
+  },
+  {
+    name: "motor",
+    value: "missing",
+    description: "This transport does`t have motor"
+  }
+];
+es.factsImport(facts);
+```
+Ok, now we can try to ask wanted fact:
+```js
+let factWanted = es.factGetValue(`transport`);
+console.log(factWanted);
+// {
+//   name: 'transport',
+//   value: 'skateboard',
+//   history: [ "rule: wheels = 4 AND motor = 'missing'" ]
+// }
+```
+Object `factWanted` have some fields:
+* name - fact name
+* value - fact value
+* history - fact history or changes reason list 
+
 ## API details 

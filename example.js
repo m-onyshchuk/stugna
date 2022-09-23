@@ -1,6 +1,6 @@
-'use strict';
 
 const {StugnaES} = require("./stugna");
+let es = new StugnaES();
 
 let rules = [
   {
@@ -24,6 +24,11 @@ let rules = [
     factValue: "bike"
   }
 ];
+es.rulesImport(rules);
+
+let factsUnknown = es.factGetPredecessorsUnknown(`transport`);
+console.log(factsUnknown);
+// [ 'wheels', 'motor' ]
 
 let facts = [
   {
@@ -37,26 +42,12 @@ let facts = [
     description: "This transport does`t have motor"
   }
 ];
-
-let es = new StugnaES();
-es.rulesImport(rules);
 es.factsImport(facts);
 
-let events = es.eventAll();
-console.log('events', events);
-
-rules = es.rulesAll();
-console.log('rules', rules);
-
-facts = es.factsAllAsArray();
-console.log('facts-array', facts);
-
-facts = es.factsAllAsMap();
-console.log('facts-map', facts);
-
-let factToKnow = 'transport';
-let predecessorsWanted = es.factGetPredecessorsWanted(factToKnow);
-console.log(`${factToKnow} predecessors wanted`, predecessorsWanted);
-
-let predecessorsUnknown = es.factGetPredecessorsUnknown(factToKnow);
-console.log(`${factToKnow} predecessors unknown`, predecessorsUnknown);
+let factWanted = es.factGetValue(`transport`);
+console.log(factWanted);
+// {
+//   name: 'transport',
+//   value: 'skateboard',
+//   history: [ "rule: wheels = 4 AND motor = 'missing'" ]
+// }
