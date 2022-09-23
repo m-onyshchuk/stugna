@@ -40,7 +40,7 @@ let facts = [
 
 let es = new StugnaES();
 es.rulesImport(rules);
-es.factsImport(facts);
+// es.factsImport(facts);
 
 let events = es.eventAll();
 console.log('events', events);

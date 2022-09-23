@@ -197,7 +197,16 @@ class Rule {
               }
               type = TOKEN_NUMBER;
             } else {
-              type = TOKEN_VARIABLE;
+              if (part === 'TRUE' || part === 'FALSE') {
+                type = TOKEN_BOOLEAN;
+                if (part === 'TRUE') {
+                  part = true;
+                } else {
+                  part = false;
+                }
+              } else {
+                type = TOKEN_VARIABLE;
+              }
             }
           }
           tokens.push({name:part, type});

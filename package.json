@@ -1,5 +1,5 @@
 {
-  "name": "stugna",
+  "name": "stugna-es",
   "version": "0.0.1",
   "description": "Simple engine for expert systems",
   "main": "index.js",
