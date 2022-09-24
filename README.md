@@ -92,6 +92,41 @@ let es = new StugnaES(toSaveEvents);
 ```
 * toSaveEvents - parameter to save various events about facts and rules. Default value is true.  
 
+### ruleAdd
+Add one rule to system.
+```js
+let rule = {
+  condition: "wheels = 4 AND motor = 'present'",
+  factName: "transport",
+  factValue: "car",
+  priority: 10,
+  description: "Transport with engine and 4 wheels is a car"
+};
+let toRegularize = true;
+es.ruleAdd(rule, toRegularize);
+```
+* condition - mandatory string field to describe condition for adding new fact to system. 
+  Condition is a logic expression, can contains:
+  * numbers, integer or floats
+  * strings. Each string must be in single quotes
+  * operators:
+    * `>` - greater than operator returns true if the left operand is greater than the right operand, and false otherwise, example: `wheels > 4`
+    * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, example: `wheels < 4`
+    * `=` - equality operator checks whether its two operands are equal, returning a boolean result, equality is strict, example: `motor = 'present'`
+    * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, example: `motor <> 'present'`
+    * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all the operands are true. Otherwise it will be false.
+    * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its operands is true.
+    * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa.
+  * parentheses to group operators, example: `(wheels = 4 AND motor = 'present') OR weight > 1000`
+* factName - name of new fact, which will be added if condition will be true. Field must be string, mandatory. 
+* factValue - value of new fact, which will be added if condition will be true. Field can be number (integer or float) 
+  or string, mandatory.
+* priority - rule`s priority, number, optional, default value is 1. All rules are processing by order with priority.
+  Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
+  is undetermined.
+* description - short fact description for log, string, optional
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
+
 ### factAdd
 Add one fact to system.
 ```js
