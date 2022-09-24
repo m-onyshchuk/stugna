@@ -219,7 +219,7 @@ es.rulesClear();
 ```
 
 ### factAdd
-Add one fact to system.
+Add one fact to system. If there is a fact with same name in system it will be overwritten.
 ```js
 let fact = { 
   name: 'wheels', 
@@ -235,7 +235,7 @@ es.factAdd(fact, toRegularize);
 * toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true 
 
 ### factsImport
-Import set (array) of facts to system
+Import set (array) of facts to system. Previous facts with same names will be overwritten.
 ```js
 let facts = [
   {
