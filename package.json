@@ -13,8 +13,14 @@
     "type": "git",
     "url": "git+https://github.com/m-onyshchuk/stugna.git"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "expert system",
+    "engine",
+    "rule",
+    "logic"
+  ],
+  "author": "M.Onyshchuk",
+  "license": "Apache License 2.0",
   "bugs": {
     "url": "https://github.com/m-onyshchuk/stugna/issues"
   },
