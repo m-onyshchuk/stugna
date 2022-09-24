@@ -17,7 +17,12 @@
     "expert system",
     "engine",
     "rule",
-    "logic"
+    "logic",
+    "forward-chaining",
+    "backward-chaining",
+    "artificial",
+    "intelligence",
+    "ai"
   ],
   "author": "M.Onyshchuk",
   "license": "Apache License 2.0",
