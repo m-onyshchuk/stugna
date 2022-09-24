@@ -1,6 +1,6 @@
 {
   "name": "stugna-es",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Simple engine for expert systems",
   "main": "stugna-es.js",
   "engines": {

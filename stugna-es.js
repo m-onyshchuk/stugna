@@ -40,6 +40,13 @@ class StugnaES {
   }
 
   /**
+   *
+   */
+  eventsClear() {
+    this.#events = [];
+  }
+
+  /**
    * @param name {string}
    * @param value {number|string}
    * @param description {string}
@@ -124,6 +131,21 @@ class StugnaES {
   }
 
   /**
+   * @param facts {object[]}
+   * @param toRegularize {boolean}
+   */
+  factsImport(facts, toRegularize = true) {
+    for (let fact of facts) {
+      if (fact.name !== undefined && fact.value !== undefined && fact.description !== undefined) {
+        this.factAdd(fact, false);
+      }
+    }
+    if (toRegularize) {
+      this.regularize();
+    }
+  }
+
+  /**
    * @returns {{name: string, value: (number|string), history: string[]}[]}
    */
   factsAllAsArray() {
@@ -141,18 +163,11 @@ class StugnaES {
   }
 
   /**
-   * @param facts {object[]}
-   * @param toRegularize {boolean}
+   *
    */
-  factsImport(facts, toRegularize = true) {
-    for (let fact of facts) {
-      if (fact.name !== undefined && fact.value !== undefined && fact.description !== undefined) {
-        this.factAdd(fact, false);
-      }
-    }
-    if (toRegularize) {
-      this.regularize();
-    }
+  factsClear() {
+    this.#facts = {};
+    this.eventAdd('facts clear', 'all facts are cleaned');
   }
 
   /**
@@ -205,6 +220,14 @@ class StugnaES {
     if (toRegularize) {
       this.regularize();
     }
+  }
+
+  /**
+   *
+   */
+  rulesClear() {
+    this.#rules = [];
+    this.eventAdd('rules clear', 'all rules are cleaned');
   }
 
   /**

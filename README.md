@@ -81,4 +81,47 @@ Object `factWanted` has some fields:
 * history - fact history or changes reason list 
 
 ## API details 
-To be continued ...
+The methods of the StugnaES class are described below. 
+
+### constructor
+Instance creating
+```js
+const {StugnaES} = require("stugna-es");
+let toSaveEvents = true;
+let es = new StugnaES(toSaveEvents);
+```
+* toSaveEvents - parameter to save various events about facts and rules. Default value is true.  
+
+### factAdd
+Add one fact to system.
+```js
+let fact = { name: 'wheels', value: 4, description: 'Transport has 4 wheels' };
+let toRegularize = true;
+es.factAdd(fact, toRegularize);
+```
+* name - fact name, string, mandatory
+* value - fact value, number or string, mandatory
+* description - short fact description for log, string, optional
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true 
+
+### factIsKnown 
+Is fact already known? 
+```js
+let name = 'wheels'; 
+let isKnown = es.factIsKnown(name);
+console.log (isKnown);
+// true
+```
+* name - fact name, string, mandatory
+* return value - boolean
+
+### factGetValue
+Ask value of fact.
+```js
+let name = 'wheels'; 
+let value = es.factGetValue(name);
+console.log (value);
+// 4
+```
+* name - fact name, string, mandatory
+* return value - fact value, number, string or null for unknown facts 
