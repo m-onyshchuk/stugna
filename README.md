@@ -96,11 +96,11 @@ let es = new StugnaES(toSaveEvents);
 Add one rule to system.
 ```js
 let rule = {
-  condition: "wheels = 4 AND motor = 'present'",
+  condition: "weight > 20000",
   factName: "transport",
-  factValue: "car",
+  factValue: "bus",
   priority: 10,
-  description: "Transport with engine and 4 wheels is a car"
+  description: "Transport with weight more than 20 ton looks like a bus"
 };
 let toRegularize = true;
 es.ruleAdd(rule, toRegularize);
@@ -127,10 +127,105 @@ es.ruleAdd(rule, toRegularize);
 * description - short fact description for log, string, optional
 * toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
 
+### rulesImport
+Import set (array) of rules to system
+```js
+let rules = [
+  {
+    condition: "wheels = 4 AND motor = 'present'",
+    factName: "transport",
+    factValue: "car",
+    priority: 10,
+    description: "Transport with engine and 4 wheels is a car"
+  },
+  {
+    condition: "wheels = 2 AND motor = 'present'",
+    factName: "transport",
+    factValue: "motorcycle",
+    priority: 10,
+    description: "Transport with engine and 2 wheels is a motorcycle"
+  },
+  {
+    condition: "wheels = 4 AND motor = 'missing'",
+    factName: "transport",
+    factValue: "skateboard",
+    priority: 10,
+    description: "Transport with 4 wheels and without engine is a skateboard"
+  },
+  {
+    condition: "wheels = 2 AND motor = 'missing'",
+    factName: "transport",
+    factValue: "bike",
+    priority: 10,
+    description: "Transport with 2 wheels and without engine is a bike"
+  }
+];
+let toRegularize = true;
+es.rulesImport(rules, toRegularize);
+```
+* rules - array of objects with fields like in `ruleAdd` method
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
+
+### rulesAll
+Method returns all known rules
+```js
+let rulesAll = es.rulesAll();
+console.log (rulesAll);
+/*
+[
+  {
+    condition: 'weight > 20000',
+    factName: 'transport',
+    valueValue: 'transport',
+    priority: 10,
+    description: 'Transport with weight more than 20 ton looks like a bus'
+  },
+  {
+    condition: "wheels = 4 AND motor = 'present'",
+    factName: 'transport',
+    valueValue: 'transport',
+    priority: 10,
+    description: 'Transport with engine and 4 wheels is a car'
+  },
+  {
+    condition: "wheels = 2 AND motor = 'present'",
+    factName: 'transport',
+    valueValue: 'transport',
+    priority: 10,
+    description: 'Transport with engine and 2 wheels is a motorcycle'
+  },
+  {
+    condition: "wheels = 4 AND motor = 'missing'",
+    factName: 'transport',
+    valueValue: 'transport',
+    priority: 10,
+    description: 'Transport with 4 wheels and without engine is a skateboard'
+  },
+  {
+    condition: "wheels = 2 AND motor = 'missing'",
+    factName: 'transport',
+    valueValue: 'transport',
+    priority: 10,
+    description: 'Transport with 2 wheels and without engine is a bike'
+  }
+]
+*/
+```
+
+### rulesClear
+Method cleans all rules in system
+```js
+es.rulesClear();
+```
+
 ### factAdd
 Add one fact to system.
 ```js
-let fact = { name: 'wheels', value: 4, description: 'Transport has 4 wheels' };
+let fact = { 
+  name: 'wheels', 
+  value: 4, 
+  description: 'Transport has 4 wheels' 
+};
 let toRegularize = true;
 es.factAdd(fact, toRegularize);
 ```
@@ -138,6 +233,27 @@ es.factAdd(fact, toRegularize);
 * value - fact value, number or string, mandatory
 * description - short fact description for log, string, optional
 * toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true 
+
+### factsImport
+Import set (array) of facts to system
+```js
+let facts = [
+  {
+    name: "wheels",
+    value: 4,
+    description: "This transport has 2 wheels"
+  },
+  {
+    name: "motor",
+    value: "missing",
+    description: "This transport does`t have motor"
+  }
+];
+let toRegularize = true;
+es.factsImport(facts, toRegularize);
+```
+* facts - array of objects with fields like in `factAdd` method
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
 
 ### factIsKnown 
 Is fact already known? 
@@ -160,3 +276,25 @@ console.log (value);
 ```
 * name - fact name, string, mandatory
 * return value - fact value, number, string or null for unknown facts 
+
+### factGetPredecessorsWanted
+Ask all fact names which may be need to determine asked fact.
+```js
+let name = 'transport'; 
+let wanted = es.factGetPredecessorsWanted(name);
+console.log (wanted);
+// [ 'weight', 'wheels', 'motor' ]
+```
+* name - fact name for which it is necessary to find predecessors, string, mandatory
+* return value - array of fact names
+
+### factGetPredecessorsUnknown
+Ask fact names which are still unknown to determine asked fact.
+```js
+let name = 'transport'; 
+let unknown = es.factGetPredecessorsUnknown(name);
+console.log (unknown);
+// [ 'weight' ]
+```
+* name - fact name for which it is necessary to find predecessors, string, mandatory
+* return value - array of fact names

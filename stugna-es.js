@@ -189,19 +189,6 @@ class StugnaES {
   }
 
   /**
-   *
-   */
-  rulesAll() {
-    return this.#rules.map(rule => { return {
-      condition: rule.condition,
-      factName: rule.fact,
-      valueValue: rule.fact,
-      priority: rule.priority,
-      description: rule.description
-    }});
-  }
-
-  /**
    * @param rules {object[]}
    * @param toRegularize {boolean}
    */
@@ -220,6 +207,19 @@ class StugnaES {
     if (toRegularize) {
       this.regularize();
     }
+  }
+
+  /**
+   *
+   */
+  rulesAll() {
+    return this.#rules.map(rule => { return {
+      condition: rule.condition,
+      factName: rule.fact,
+      valueValue: rule.fact,
+      priority: rule.priority,
+      description: rule.description
+    }});
   }
 
   /**
