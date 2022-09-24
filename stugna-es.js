@@ -35,7 +35,7 @@ class StugnaES {
   /**
    *
    */
-  eventAll() {
+  eventsAll() {
     return this.#events.map(event => event);
   }
 

@@ -65,3 +65,5 @@ console.log (wanted);
 let unknown = es.factGetPredecessorsUnknown(name);
 console.log (unknown);
 
+let events = es.eventsAll();
+console.log (events);

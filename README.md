@@ -3,13 +3,13 @@ Stugna is a simple engine for expert systems building. Rules and facts can be de
 knowledge base can be serialized into/from one JSON file.
 
 ## Usage example
-In this example we will create a tiny expert system to demonstrate work with rules and facts. First of all we need 
-to create expert system instance:  
+To illustrate how a small expert system can function with rules and facts, we will build one in this example. 
+First of all, we need to create an expert system instance:  
 ```js
 const {StugnaES} = require("stugna-es");
 let es = new StugnaES();
 ```
-Our expert system will try to guess transport type by 2 fact - wheels count and motor presence. Next we have to add 
+Our expert system will try to guess transport type by 2 facts - wheels count and motor presence. Next we have to add 
 some rules to our system:
 ```js
 let rules = [
@@ -36,12 +36,12 @@ let rules = [
 ];
 es.rulesImport(rules);
 ```
-Each of rules contains 3 mandatory field:
+Each of these 4 rules contain mandatory fields:
 * condition - a simple logic expression with operators >, <, =, <>, AND, OR, NOT and parentheses
-* factName - a name of fact which will be added to system if condition will be true. You can think about fact name as variable`s name. 
-* factValue - value of fact to add to system in success condition case, i.e. value of variable.
+* factName - a fact's name that will be added to the system if the condition is met. Fact names can be compared to variable names. 
+* factValue - fact's value to add to system in success condition case, i.e. value of variable.
 
-Our expert system already can do some useful. We can ask it what knowledge (facts set) does it need to get info about 
+Being that simple, our tiny expert system is somewhat useful already. We can ask it what knowledge (facts set) does it need to get info about 
 wanted `transport` fact:
 ```js
 let factsUnknown = es.factGetPredecessorsUnknown(`transport`);
@@ -49,7 +49,7 @@ console.log(factsUnknown);
 // [ 'wheels', 'motor' ]
 ```
 
-Next we need to add wanted facts to system:
+Next we can add missing facts to the system:
 ```js
 let facts = [
   {
@@ -65,7 +65,7 @@ let facts = [
 ];
 es.factsImport(facts);
 ```
-Ok, now we can try to ask wanted fact:
+Now, we can query original parent fact:
 ```js
 let factWanted = es.factGetValue(`transport`);
 console.log(factWanted);
@@ -75,7 +75,7 @@ console.log(factWanted);
 //   history: [ "rule: wheels = 4 AND motor = 'missing'" ]
 // }
 ```
-Object `factWanted` has some fields:
+Object `factWanted` has the following fields:
 * name - fact name
 * value - fact value
 * history - fact history or changes reason list 
@@ -90,10 +90,10 @@ const {StugnaES} = require("stugna-es");
 let toSaveEvents = true;
 let es = new StugnaES(toSaveEvents);
 ```
-* toSaveEvents - parameter to save various events about facts and rules. Default value is true.  
+* toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.  
 
 ### ruleAdd
-Add one rule to system.
+Add one rule to the system.
 ```js
 let rule = {
   condition: "weight > 20000",
@@ -106,8 +106,8 @@ let toRegularize = true;
 es.ruleAdd(rule, toRegularize);
 ```
 * condition - mandatory string field to describe condition for adding new fact to system. 
-  Condition is a logic expression, can contains:
-  * numbers, integer or floats
+  Condition is a logic expression which contains:
+  * numbers, `integer` or `float`
   * strings. Each string must be in single quotes
   * operators:
     * `>` - greater than operator returns true if the left operand is greater than the right operand, and false otherwise, example: `wheels > 4`
@@ -118,17 +118,17 @@ es.ruleAdd(rule, toRegularize);
     * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its operands is true.
     * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa.
   * parentheses to group operators, example: `(wheels = 4 AND motor = 'present') OR weight > 1000`
-* factName - name of new fact, which will be added if condition will be true. Field must be string, mandatory. 
-* factValue - value of new fact, which will be added if condition will be true. Field can be number (integer or float) 
+* factName - name of new fact, which will be added if condition is met. Field must be string, mandatory. 
+* factValue - value of new fact, which will be added if condition is met. Field can be numerical (`integer` or `float`) 
   or string, mandatory.
-* priority - rule`s priority, number, optional, default value is 1. All rules are processing by order with priority.
+* priority - rule priority, number, optional, default value is `1`. All rules are processing by order with priority.
   Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
   is undetermined.
-* description - short fact description for log, string, optional
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
+* description - short fact description for logging, string, optional
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true`
 
 ### rulesImport
-Import set (array) of rules to system
+Import array of rules to the system.
 ```js
 let rules = [
   {
@@ -164,10 +164,10 @@ let toRegularize = true;
 es.rulesImport(rules, toRegularize);
 ```
 * rules - array of objects with fields like in `ruleAdd` method
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true`
 
 ### rulesAll
-Method returns all known rules
+Returns all known rules.
 ```js
 let rulesAll = es.rulesAll();
 console.log (rulesAll);
@@ -213,13 +213,13 @@ console.log (rulesAll);
 ```
 
 ### rulesClear
-Method cleans all rules in system
+Cleans all rules in the system.
 ```js
 es.rulesClear();
 ```
 
 ### factAdd
-Add one fact to system. If there is a fact with same name in system it will be overwritten.
+Add one fact to the system. If there is a fact with the same name in system it will be overwritten.
 ```js
 let fact = { 
   name: 'wheels', 
@@ -230,12 +230,12 @@ let toRegularize = true;
 es.factAdd(fact, toRegularize);
 ```
 * name - fact name, string, mandatory
-* value - fact value, number or string, mandatory
-* description - short fact description for log, string, optional
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true 
+* value - fact value, numerical or string, mandatory
+* description - short fact description for logging, string, optional
+* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true` 
 
 ### factsImport
-Import set (array) of facts to system. Previous facts with same names will be overwritten.
+Import array of facts to the system. Previous facts with same names will be overwritten.
 ```js
 let facts = [
   {
@@ -267,7 +267,7 @@ console.log (isKnown);
 * return value - boolean
 
 ### factGetValue
-Ask value of fact.
+Returns fact value by the name.
 ```js
 let name = 'wheels'; 
 let value = es.factGetValue(name);
@@ -278,7 +278,7 @@ console.log (value);
 * return value - fact value, number, string or null for unknown facts 
 
 ### factGetPredecessorsWanted
-Ask all fact names which may be need to determine asked fact.
+Returns all fact names which may be needed to determine asked fact.
 ```js
 let name = 'transport'; 
 let wanted = es.factGetPredecessorsWanted(name);
@@ -289,7 +289,7 @@ console.log (wanted);
 * return value - array of fact names
 
 ### factGetPredecessorsUnknown
-Ask fact names which are still unknown to determine asked fact.
+Returns fact names which are still unknown to determine asked fact.
 ```js
 let name = 'transport'; 
 let unknown = es.factGetPredecessorsUnknown(name);
@@ -298,3 +298,52 @@ console.log (unknown);
 ```
 * name - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
+
+### eventsAll
+Returns all events if logging was turned on in constructor.
+```js
+let events = es.eventsAll();
+console.log (events);
+/*
+[
+  {
+    brief: 'rule add',
+    more: 'Transport with weight more than 20 ton looks like a bus'
+  },
+  {
+    brief: 'rule add',
+    more: 'Transport with engine and 4 wheels is a car'
+  },
+  {
+    brief: 'rule add',
+    more: 'Transport with engine and 2 wheels is a motorcycle'
+  },
+  {
+    brief: 'rule add',
+    more: 'Transport with 4 wheels and without engine is a skateboard'
+  },
+  {
+    brief: 'rule add',
+    more: 'Transport with 2 wheels and without engine is a bike'
+  },
+  { 
+    brief: 'fact add', 
+    more: 'This transport has 2 wheels' 
+    },
+  { 
+    brief: 'fact add', 
+    more: 'This transport does`t have motor' 
+    },
+  {
+    brief: 'rule ok',
+    more: 'Transport with 4 wheels and without engine is a skateboard'
+  }
+]
+*/
+```
+
+### eventsClear
+Cleans all events in the system.
+```js
+es.eventsClear();
+```
