@@ -329,11 +329,11 @@ console.log (events);
   { 
     brief: 'fact add', 
     more: 'This transport has 2 wheels' 
-    },
+  },
   { 
     brief: 'fact add', 
     more: 'This transport does`t have motor' 
-    },
+  },
   {
     brief: 'rule ok',
     more: 'Transport with 4 wheels and without engine is a skateboard'
