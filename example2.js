@@ -60,13 +60,24 @@ let facts = [
 ];
 es.factsImport(facts);
 
+let factsArray = es.factsAllAsArray();
+console.log ('--- factsArray ---');
+console.log (factsArray);
+
+let factsMap = es.factsAllAsMap();
+console.log ('--- factsMap ---');
+console.log (factsMap);
+
 let name = 'transport';
 
 let wanted = es.factGetPredecessorsWanted(name);
+console.log ('--- wanted ---');
 console.log (wanted);
 
 let unknown = es.factGetPredecessorsUnknown(name);
+console.log ('--- unknown ---');
 console.log (unknown);
 
 let events = es.eventsAll();
+console.log ('--- events ---');
 console.log (events);

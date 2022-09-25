@@ -11,6 +11,8 @@ knowledge base can be serialized into/from one JSON file.
   - [rulesClear](#rulesclear)
   - [factAdd](#factadd)
   - [factsImport](#factsimport)
+  - [factsAllAsArray](#factsallasarray)
+  - [factsAllAsMap](#factsallasmap)
   - [factIsKnown](#factisknown)
   - [factGetValue](#factgetvalue)
   - [factGetPredecessorsWanted](#factgetpredecessorswanted)
@@ -278,6 +280,40 @@ es.factsImport(facts, isTrigger);
 * facts - array of objects with fields like in `factAdd` method
 * isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
+
+### factsAllAsArray
+Returns all known facts as array.
+```js
+let factsArray = es.factsAllAsArray();
+console.log (factsArray);
+/*
+[
+  {
+    name: 'wheels',
+    value: 4,
+    history: [ 'This transport has 2 wheels' ]
+  },
+  {
+    name: 'motor',
+    value: 'missing',
+    history: [ 'This transport does`t have motor' ]
+  },
+  {
+    name: 'transport',
+    value: 'skateboard',
+    history: [ 'Transport with 4 wheels and without engine is a skateboard' ]
+  }
+]
+*/
+```
+
+### factsAllAsMap
+Returns all known facts as map.
+```js
+let factsMap = es.factsAllAsMap();
+console.log (factsMap);
+// { wheels: 4, motor: 'missing', transport: 'skateboard' }
+```
 
 ### factIsKnown 
 Is fact already known? 
