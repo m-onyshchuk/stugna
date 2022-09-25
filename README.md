@@ -2,6 +2,22 @@
 Stugna is a simple engine for expert systems building. Rules and facts can be described in JSON format, so all your 
 knowledge base can be serialized into/from one JSON file.
 
+- [Usage example](#usage-example)
+  - [API details](#api-details)
+    - [constructor](#constructor)
+    - [ruleAdd](#ruleadd)
+    - [rulesImport](#rulesimport)
+    - [rulesAll](#rulesall)
+    - [rulesClear](#rulesclear)
+    - [factAdd](#factadd)
+    - [factsImport](#factsimport)
+    - [factIsKnown](#factisknown)
+    - [factGetValue](#factgetvalue)
+    - [factGetPredecessorsWanted](#factgetpredecessorswanted)
+    - [factGetPredecessorsUnknown](#factgetpredecessorsunknown)
+    - [eventsAll](#eventsall)
+    - [eventsClear](#eventsclear)
+
 ## Usage example
 To illustrate how a small expert system can function with rules and facts, we will build one in this example. 
 First of all, we need to create an expert system instance:  
