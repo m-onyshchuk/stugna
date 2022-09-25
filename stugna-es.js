@@ -13,9 +13,13 @@ class StugnaES {
   #events;
 
   /**
-   * @param toSaveEvents {boolean}
+   * @param options {Object}
    */
-  constructor(toSaveEvents = true) {
+  constructor(options) {
+    let toSaveEvents = true;
+    if (options && options.toSaveEvents !== undefined) {
+      toSaveEvents = options.toSaveEvents;
+    }
     this.#rules = [];
     this.#facts = {};
     this.#toSaveEvents = toSaveEvents;
@@ -52,7 +56,11 @@ class StugnaES {
    * @param description {string}
    * @param toRegularize {boolean}
    */
-  factAdd({name, value, description}, toRegularize = true) {
+  factAdd({name, value, description}, isTrigger = true) {
+    if (name.indexOf(' ') !== -1) {
+      this.eventAdd('fact fail', `Try to add fact with spaces in name: '${name}'`);
+      return;
+    }
     let factNew = new Fact(name, value, description);
     let factOld = this.#facts[name];
     if (factOld) {
@@ -61,7 +69,7 @@ class StugnaES {
     }
     this.#facts[name] = factNew;
     this.eventAdd('fact add', description);
-    if (toRegularize) {
+    if (isTrigger) {
       this.regularize();
     }
   }
@@ -132,15 +140,15 @@ class StugnaES {
 
   /**
    * @param facts {object[]}
-   * @param toRegularize {boolean}
+   * @param isTrigger {boolean}
    */
-  factsImport(facts, toRegularize = true) {
+  factsImport(facts, isTrigger = true) {
     for (let fact of facts) {
       if (fact.name !== undefined && fact.value !== undefined && fact.description !== undefined) {
         this.factAdd(fact, false);
       }
     }
-    if (toRegularize) {
+    if (isTrigger) {
       this.regularize();
     }
   }
@@ -176,23 +184,23 @@ class StugnaES {
    * @param factValue {string}
    * @param priority {number}
    * @param description {string}
-   * @param toRegularize {boolean}
+   * @param isTrigger {boolean}
    */
-  ruleAdd({condition, factName, factValue, priority, description}, toRegularize = true) {
+  ruleAdd({condition, factName, factValue, priority, description}, isTrigger = true) {
     let rule = new Rule(condition, factName, factValue, priority, description);
     this.#rules.push(rule);
     this.#rules.sort((a,b) => {return b.priority - a.priority }); // by priority ASC
     this.eventAdd('rule add', description);
-    if (toRegularize) {
+    if (isTrigger) {
       this.regularize();
     }
   }
 
   /**
    * @param rules {object[]}
-   * @param toRegularize {boolean}
+   * @param isTrigger {boolean}
    */
-  rulesImport(rules, toRegularize = true) {
+  rulesImport(rules, isTrigger = true) {
     for (let rule of rules) {
       if (
         rule.condition !== undefined &&
@@ -204,7 +212,7 @@ class StugnaES {
         this.ruleAdd(rule, false);
       }
     }
-    if (toRegularize) {
+    if (isTrigger) {
       this.regularize();
     }
   }

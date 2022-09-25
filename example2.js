@@ -1,6 +1,9 @@
 'use strict';
 const {StugnaES} = require("./stugna-es");
-let es = new StugnaES();
+let options = {
+  toSaveEvents: true
+};
+let es = new StugnaES(options);
 
 let rule = {
   condition: "weight > 20000",

@@ -87,10 +87,13 @@ The methods of the StugnaES class are described below.
 Instance creating
 ```js
 const {StugnaES} = require("stugna-es");
-let toSaveEvents = true;
-let es = new StugnaES(toSaveEvents);
+let options = {
+  toSaveEvents: true
+};
+let es = new StugnaES(options);
 ```
-* toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.  
+* options - object with optional fields:
+  * toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.  
 
 ### ruleAdd
 Add one rule to the system.
@@ -102,13 +105,14 @@ let rule = {
   priority: 10,
   description: "Transport with weight more than 20 ton looks like a bus"
 };
-let toRegularize = true;
-es.ruleAdd(rule, toRegularize);
+let isTrigger = true;
+es.ruleAdd(rule, isTrigger);
 ```
 * condition - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
+  * fact names 
   * numbers, `integer` or `float`
-  * strings. Each string must be in single quotes
+  * strings. Each string must be in single quotes. All words without single quotes will be labeled as fact names.  
   * operators:
     * `>` - greater than operator returns true if the left operand is greater than the right operand, and false otherwise, example: `wheels > 4`
     * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, example: `wheels < 4`
@@ -125,7 +129,8 @@ es.ruleAdd(rule, toRegularize);
   Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
   is undetermined.
 * description - short fact description for logging, string, optional
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true`
+* isTrigger - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
+  facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
 ### rulesImport
 Import array of rules to the system.
@@ -160,11 +165,12 @@ let rules = [
     description: "Transport with 2 wheels and without engine is a bike"
   }
 ];
-let toRegularize = true;
-es.rulesImport(rules, toRegularize);
+let isTrigger = true;
+es.rulesImport(rules, isTrigger);
 ```
 * rules - array of objects with fields like in `ruleAdd` method
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true`
+* isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
+  facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
 ### rulesAll
 Returns all known rules.
@@ -226,13 +232,14 @@ let fact = {
   value: 4, 
   description: 'Transport has 4 wheels' 
 };
-let toRegularize = true;
-es.factAdd(fact, toRegularize);
+let isTrigger = true;
+es.factAdd(fact, isTrigger);
 ```
-* name - fact name, string, mandatory
+* name - fact name, string, mandatory. Fact name can`t contains spaces. 
 * value - fact value, numerical or string, mandatory
 * description - short fact description for logging, string, optional
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - `true` 
+* isTrigger - if true, after new fact adding, rules check procedure starts automatically to generate new possible
+  facts due to given rules in the system. Parameter is boolean, optional, default value - `true` 
 
 ### factsImport
 Import array of facts to the system. Previous facts with same names will be overwritten.
@@ -249,11 +256,12 @@ let facts = [
     description: "This transport does`t have motor"
   }
 ];
-let toRegularize = true;
-es.factsImport(facts, toRegularize);
+let isTrigger = true;
+es.factsImport(facts, isTrigger);
 ```
 * facts - array of objects with fields like in `factAdd` method
-* toRegularize - parameter to regularize all rules and facts, boolean, optional, default value - true
+* isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
+  facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
 ### factIsKnown 
 Is fact already known? 
