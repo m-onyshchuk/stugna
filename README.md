@@ -62,7 +62,7 @@ Each of these 4 rules contain mandatory fields:
 Being that simple, our tiny expert system is somewhat useful already. We can ask it what knowledge (facts set) does it need to get info about 
 wanted `transport` fact:
 ```js
-let factsUnknown = es.factGetPredecessorsUnknown(`transport`);
+let factsUnknown = es.factGetPredecessorsUnknown("transport");
 console.log(factsUnknown);
 // [ 'wheels', 'motor' ]
 ```
@@ -85,7 +85,7 @@ es.factsImport(facts);
 ```
 Now, we can query original parent fact:
 ```js
-let factWanted = es.factGetValue(`transport`);
+let factWanted = es.factGetValue("transport");
 console.log(factWanted);
 // {
 //   name: 'transport',
@@ -247,9 +247,9 @@ es.rulesClear();
 Add one fact to the system. If there is a fact with the same name in system it will be overwritten.
 ```js
 let fact = { 
-  name: 'wheels', 
+  name: "wheels",
   value: 4, 
-  description: 'Transport has 4 wheels' 
+  description: "Transport has 4 wheels" 
 };
 let isTrigger = true;
 es.factAdd(fact, isTrigger);
@@ -319,7 +319,7 @@ console.log (factsMap);
 ### factIsKnown 
 Is fact already known? 
 ```js
-let name = 'wheels'; 
+let name = "wheels"; 
 let isKnown = es.factIsKnown(name);
 console.log (isKnown);
 // true
@@ -330,7 +330,7 @@ console.log (isKnown);
 ### factGetValue
 Returns fact value by the name.
 ```js
-let name = 'wheels'; 
+let name = "wheels"; 
 let value = es.factGetValue(name);
 console.log (value);
 // 4
@@ -341,7 +341,7 @@ console.log (value);
 ### factGetPredecessorsWanted
 Returns all fact names which may be needed to determine asked fact.
 ```js
-let name = 'transport'; 
+let name = "transport"; 
 let wanted = es.factGetPredecessorsWanted(name);
 console.log (wanted);
 // [ 'weight', 'wheels', 'motor' ]
@@ -352,7 +352,7 @@ console.log (wanted);
 ### factGetPredecessorsUnknown
 Returns fact names which are still unknown to determine asked fact.
 ```js
-let name = 'transport'; 
+let name = "transport"; 
 let unknown = es.factGetPredecessorsUnknown(name);
 console.log (unknown);
 // [ 'weight' ]
