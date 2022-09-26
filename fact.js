@@ -19,7 +19,7 @@ class Fact {
   /**
    *
    * @param name {string}
-   * @param value {number|string}
+   * @param value {boolean|number|string}
    * @param description {string}
    */
   constructor(name, value, description) {
@@ -27,6 +27,12 @@ class Fact {
     this.name = name;
     if (typeof value === 'string' && value.length > 1) {
       value = value.replace(/'/g, '');
+      if (value === 'TRUE') {
+        value = true;
+      }
+      if (value === 'FALSE') {
+        value = false;
+      }
     }
     this.value = value;
     if (!description) {

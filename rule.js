@@ -44,13 +44,14 @@ function operatorPriority(name) {
   return operator.priority;
 }
 
-const TOKEN_UNKNOWN = 0;
-const TOKEN_BOOLEAN = 1;
-const TOKEN_NUMBER = 2;
-const TOKEN_STRING = 3;
-const TOKEN_VARIABLE = 4;
-const TOKEN_OPERATOR = 5;
-const TOKEN_PARENTHESIS = 6;
+const PROD = process.env.NODE_ENV !== 'develop';
+const TOKEN_UNKNOWN     = PROD ? 0 : 'UNKNOWN';
+const TOKEN_BOOLEAN     = PROD ? 1 : 'BOOLEAN';
+const TOKEN_NUMBER      = PROD ? 2 : 'NUMBER';
+const TOKEN_STRING      = PROD ? 3 : 'STRING';
+const TOKEN_VARIABLE    = PROD ? 4 : 'VARIABLE';
+const TOKEN_OPERATOR    = PROD ? 5 : 'OPERATOR';
+const TOKEN_PARENTHESIS = PROD ? 6 : 'PARENTHESIS';
 
 const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;

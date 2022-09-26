@@ -139,7 +139,7 @@ es.ruleAdd(rule, isTrigger);
     * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, example: `motor <> 'present'`
     * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all the operands are true. Otherwise, it will be false.
     * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its operands is true.
-    * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa.
+    * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa, example: `NOT FALSE`
   * parentheses to group operators, example: `(wheels = 4 AND motor = 'present') OR weight > 1000`
 * factName - name of new fact, which will be added if condition is met. Field must be string, mandatory. 
 * factValue - value of new fact, which will be added if condition is met. Field can be numerical (`integer` or `float`) 

@@ -4,7 +4,7 @@ const {Rule} = require('./rule');
 
 const calculations = [
   {
-    rule: "animal1 = 'cat' AND animal2 = 'dog'", result: false, facts: {animal1:{value:'cat'}, animal2:{value:'cat'}}
+    rule: "NOT FALSE", result: true, facts: {}
   },
 ];
 for (let item of calculations) {

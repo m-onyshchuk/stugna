@@ -54,7 +54,7 @@ class StugnaES {
 
   /**
    * @param name {string}
-   * @param value {number|string}
+   * @param value {boolean|number|string}
    * @param description {string}
    * @param toRegularize {boolean}
    */
