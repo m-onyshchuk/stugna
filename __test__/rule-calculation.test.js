@@ -20,6 +20,12 @@ const calculations = [
     rule: "2.0 > 1", result: true, facts: {}
   },
   {
+    rule: "2 < 3", result: true, facts: {}
+  },
+  {
+    rule: "2.0 < 3", result: true, facts: {}
+  },
+  {
     rule: "2.0 = 2", result: true, facts: {}
   },
   {
@@ -30,6 +36,24 @@ const calculations = [
   },
   {
     rule: "'mouse' > 'cat'", result: true, facts: {}
+  },
+  {
+    rule: "animal = 'cat'", result: true, facts: {animal:{value:'cat'}}
+  },
+  {
+    rule: "animal <> 'mouse'", result: true, facts: {animal:{value:'cat'}}
+  },
+  {
+    rule: "animal1 = animal2", result: true, facts: {animal1:{value:'cat'}, animal2:{value:'cat'}}
+  },
+  {
+    rule: "animal = 'cat' OR animal = 'dog'", result: true, facts: {animal:{value:'cat'}}
+  },
+  {
+    rule: "animal = 'cat' OR animal = 'dog'", result: false, facts: {}
+  },
+  {
+    rule: "animal1 = 'cat' AND animal2 = 'dog'", result: false, facts: {animal1:{value:'cat'}, animal2:{value:'cat'}}
   },
 ];
 
