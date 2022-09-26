@@ -1,6 +1,6 @@
 {
   "name": "stugna-es",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Simple engine for expert systems",
   "main": "stugna-es.js",
   "engines": {
@@ -18,6 +18,8 @@
     "engine",
     "rule",
     "logic",
+    "conditions",
+    "json",
     "forward-chaining",
     "backward-chaining",
     "artificial",
@@ -25,7 +27,7 @@
     "ai"
   ],
   "author": "M.Onyshchuk",
-  "license": "Apache License 2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/m-onyshchuk/stugna/issues"
   },

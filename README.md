@@ -129,6 +129,7 @@ es.ruleAdd(rule, isTrigger);
 * condition - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
   * fact names 
+  * boolean values, `TRUE` or `FALSE`
   * numbers, `integer` or `float`
   * strings. Each string must be in single quotes. All words without single quotes will be labeled as fact names.  
   * operators:
@@ -136,7 +137,7 @@ es.ruleAdd(rule, isTrigger);
     * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, example: `wheels < 4`
     * `=` - equality operator checks whether its two operands are equal, returning a boolean result, equality is strict, example: `motor = 'present'`
     * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, example: `motor <> 'present'`
-    * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all the operands are true. Otherwise it will be false.
+    * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all the operands are true. Otherwise, it will be false.
     * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its operands is true.
     * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa.
   * parentheses to group operators, example: `(wheels = 4 AND motor = 'present') OR weight > 1000`

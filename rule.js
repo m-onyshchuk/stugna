@@ -1,15 +1,26 @@
 'use strict';
+const {
+  ERROR_RULE_CONDITION_EMPTY,
+  ERROR_RULE_FACT_NAME_EMPTY,
+  ERROR_RULE_FACT_NAME_HAS_SPACES,
+  ERROR_RULE_FACT_VALUE_EMPTY,
+  ERROR_RULE_STRING_NO_QUOTE,
+  ERROR_RULE_PARENTHESES_1,
+  ERROR_RULE_PARENTHESES_2
+} = require('./errors-rule');
+
 const OPERATORS = {
   '(' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
   ')' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
-  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name < b.name } },
-  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name > b.name } },
-  '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name === b.name } },
-  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name !== b.name } },
-  'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name && b.name } },
-  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.name || b.name } },
-  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a.name } }
+  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value < b.value } },
+  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value > b.value } },
+  '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value === b.value } },
+  '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value !== b.value } },
+  'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value && b.value } },
+  'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value || b.value } },
+  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a.value } }
 }
+const regexpWhiteSpaces = new RegExp('\\s+', 'g');
 
 /**
  * @param name {string}
@@ -33,21 +44,13 @@ function operatorPriority(name) {
   return operator.priority;
 }
 
-// const TOKEN_UNKNOWN = 0;
-// const TOKEN_NUMBER = 1;
-// const TOKEN_BOOLEAN = 2;
-// const TOKEN_STRING = 3;
-// const TOKEN_VARIABLE = 4;
-// const TOKEN_OPERATOR = 5;
-// const TOKEN_PARENTHESIS = 6;
-
-const TOKEN_UNKNOWN  = 'unknown';
-const TOKEN_BOOLEAN  = 'boolean';
-const TOKEN_NUMBER   = 'number';
-const TOKEN_STRING   = 'string';
-const TOKEN_VARIABLE = 'variable';
-const TOKEN_OPERATOR = 'operator';
-const TOKEN_PARENTHESIS = 'parenthesis';
+const TOKEN_UNKNOWN = 0;
+const TOKEN_BOOLEAN = 1;
+const TOKEN_NUMBER = 2;
+const TOKEN_STRING = 3;
+const TOKEN_VARIABLE = 4;
+const TOKEN_OPERATOR = 5;
+const TOKEN_PARENTHESIS = 6;
 
 const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;
@@ -84,7 +87,7 @@ class Rule {
   /**
    * @param condition {string}
    * @param factName {string}
-   * @param factValue {string}
+   * @param factValue {null|number|string}
    * @param priority {number}
    * @param description {string}
    */
@@ -116,15 +119,19 @@ class Rule {
    */
   validate () {
     if (!this.condition) {
-      this.error = 'rule condition can`t be empty';
+      this.error = ERROR_RULE_CONDITION_EMPTY;
       return;
     }
     if (!this.fact) {
-      this.error = 'fact name can`t be empty';
+      this.error = ERROR_RULE_FACT_NAME_EMPTY;
       return;
     }
-    if (!this.value) {
-      this.error = 'fact value can`t be empty';
+    if(regexpWhiteSpaces.test(this.fact)) {
+      this.error = ERROR_RULE_FACT_NAME_HAS_SPACES;
+      return;
+    }
+    if (this.value === null || this.value === undefined) {
+      this.error = ERROR_RULE_FACT_VALUE_EMPTY;
     }
   }
 
@@ -136,6 +143,9 @@ class Rule {
       return;
     }
     let tokens = [];
+
+    // preprocess
+    raw = raw.replace(/<>/g, '###42@@@'); // protect <> operator from inflation to < >
 
     // inflate
     let operators = Object.keys(OPERATORS);
@@ -152,6 +162,9 @@ class Rule {
       }
     }
     raw = raw.trim();
+
+    // postprocess
+    raw = raw.replace(/###42@@@/g, '<>'); // back to original notation <>
 
     // split
     let parts = raw.split(' ');
@@ -209,21 +222,21 @@ class Rule {
               }
             }
           }
-          tokens.push({name:part, type});
+          tokens.push({value:part, type});
         }
       }
 
       if (inStr > 1) { // string end
         str = str.join(' ');
         str = str.replace(/'/g, '');
-        tokens.push({name:str, type: TOKEN_STRING});
+        tokens.push({value:str, type: TOKEN_STRING});
         str = [];
         inStr = 0;
       }
     }
 
     if (inStr) {
-      this.error = "there is no ' to close string value";
+      this.error = ERROR_RULE_STRING_NO_QUOTE;
       return;
     }
 
@@ -239,6 +252,7 @@ class Rule {
     let stack = [];
     for (let token of this.tokens) {
       switch (token.type) {
+        case TOKEN_BOOLEAN:
         case TOKEN_NUMBER:
         case TOKEN_STRING:
         case TOKEN_VARIABLE:
@@ -251,9 +265,9 @@ class Rule {
             let operatorTop = stack[stack.length-1];
             if (
               operatorTop.type === TOKEN_OPERATOR && (
-                ( operatorHasLeftAssociativity(operatorCurrent.name) && operatorPriority(operatorCurrent.name) <= operatorPriority(operatorTop.name))
+                ( operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <= operatorPriority(operatorTop.value))
                 ||
-                (!operatorHasLeftAssociativity(operatorCurrent.name) && operatorPriority(operatorCurrent.name) <  operatorPriority(operatorTop.name))
+                (!operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <  operatorPriority(operatorTop.value))
               )
             ) {
               output.push(operatorTop);
@@ -266,14 +280,14 @@ class Rule {
           break;
 
         case TOKEN_PARENTHESIS:
-          if (token.name === '(') {
+          if (token.value === '(') {
             stack.push(token);
           }
-          if (token.name === ')') {
+          if (token.value === ')') {
             let pe = false;
             while (stack.length) {
               let operatorTop = stack[stack.length-1];
-              if(operatorTop.name === '(') {
+              if(operatorTop.value === '(') {
                 pe = true;
                 break;
               } else {
@@ -282,7 +296,7 @@ class Rule {
               }
             }
             if (!pe) {
-              this.error = "parentheses mismatched (1)";
+              this.error = ERROR_RULE_PARENTHESES_1;
               return;
             }
             stack.pop();
@@ -293,8 +307,8 @@ class Rule {
 
     while(stack.length) {
       let operatorTop = stack[stack.length-1];
-      if(operatorTop.name === '(' || operatorTop.name === ')') {
-        this.error = "parentheses mismatched (2)";
+      if(operatorTop.value === '(' || operatorTop.value === ')') {
+        this.error = ERROR_RULE_PARENTHESES_2;
         return;
       }
       output.push(operatorTop);
@@ -313,7 +327,7 @@ class Rule {
     if (this.calc) {
       for (let token of this.calc) {
         if (token.type === TOKEN_VARIABLE) {
-          this.variables.push(token.name);
+          this.variables.push(token.value);
         }
       }
     }
@@ -326,7 +340,7 @@ class Rule {
   getCalcString() {
     let str = '';
     if (this.calc) {
-      str = this.calc.map(token => token.name).join(' ');
+      str = this.calc.map(token => token.value).join(' ');
     }
     return str;
   }
@@ -351,14 +365,14 @@ class Rule {
           break;
 
         case TOKEN_VARIABLE:
-          let name = token.name;
+          let name = token.value;
           let value = facts[name].value;
-          token.name = value;
+          token.value = value;
           stack.push(token);
           break;
 
         case TOKEN_OPERATOR:
-          let operator = OPERATORS[token.name];
+          let operator = OPERATORS[token.value];
           let a = null;
           let b = null;
           if (operator.arg_count === 2) {
@@ -368,7 +382,7 @@ class Rule {
             a = stack.pop();
           }
           let result = operator.calc(a, b);
-          stack.push({name:result, type:TOKEN_BOOLEAN});
+          stack.push({value:result, type:TOKEN_BOOLEAN});
           break;
 
         default:
@@ -379,7 +393,7 @@ class Rule {
 
     let result = false;
     if (stack.length === 1) {
-      result = stack[0].name;
+      result = stack[0].value;
     } else {
       // error
     }

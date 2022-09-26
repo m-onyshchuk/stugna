@@ -2,6 +2,8 @@
 const {Fact} = require("./fact");
 const {Rule} = require("./rule");
 
+const regexpWhiteSpaces = new RegExp('\\s+', 'g');
+
 /**
  *
  */
@@ -15,7 +17,7 @@ class StugnaES {
   /**
    * @param options {Object}
    */
-  constructor(options) {
+  constructor(options = undefined) {
     let toSaveEvents = true;
     if (options && options.toSaveEvents !== undefined) {
       toSaveEvents = options.toSaveEvents;
@@ -57,7 +59,7 @@ class StugnaES {
    * @param toRegularize {boolean}
    */
   factAdd({name, value, description}, isTrigger = true) {
-    if (name.indexOf(' ') !== -1) {
+    if (regexpWhiteSpaces.test(name)) {
       this.eventAdd('fact fail', `Try to add fact with spaces in name: '${name}'`);
       return;
     }
@@ -139,7 +141,7 @@ class StugnaES {
   }
 
   /**
-   * @param facts {object[]}
+   * @param facts {Object[]}
    * @param isTrigger {boolean}
    */
   factsImport(facts, isTrigger = true) {
@@ -188,11 +190,18 @@ class StugnaES {
    */
   ruleAdd({condition, factName, factValue, priority, description}, isTrigger = true) {
     let rule = new Rule(condition, factName, factValue, priority, description);
-    this.#rules.push(rule);
-    this.#rules.sort((a,b) => {return b.priority - a.priority }); // by priority ASC
-    this.eventAdd('rule add', description);
-    if (isTrigger) {
-      this.regularize();
+    let ruleError = rule.getError();
+    if (ruleError) {
+      this.eventAdd('rule error', ruleError);
+    } else {
+      this.#rules.push(rule);
+      this.#rules.sort((a, b) => {
+        return b.priority - a.priority
+      }); // by priority ASC
+      this.eventAdd('rule add', description);
+      if (isTrigger) {
+        this.regularize();
+      }
     }
   }
 
