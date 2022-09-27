@@ -548,6 +548,5 @@ false
   { brief: 'rules passed', more: 'Rules pass count is 2' },
   { brief: 'rules error', more: 'Periodic rules detected' }
 ]
-]
 */
 ```
