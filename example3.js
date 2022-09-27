@@ -54,7 +54,11 @@ console.log (ordered);
 let events = es.eventsAll();
 console.log (events);
 
+facts = es.factsAllAsArray();
+console.log (facts);
+
 /*
+false
 [
   { brief: 'fact add', more: 'Initial value of season fact' },
   { brief: 'rule add', more: 'After winter comes spring' },

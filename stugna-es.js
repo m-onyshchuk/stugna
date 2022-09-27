@@ -293,7 +293,7 @@ class StugnaES {
             if (factOld.value === factNew.value) {
               continue; // there are no changes
             }
-            factOld.history.push(rule.description);
+            factOld.history.push(`rule: ${rule.description}`);
             factNew.history = factOld.history;
           }
           factNew.changed = true;

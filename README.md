@@ -543,6 +543,9 @@ console.log (ordered);
 let events = es.eventsAll();
 console.log (events);
 
+facts = es.factsAllAsArray();
+console.log (facts);
+
 /*
 false
 [
@@ -562,6 +565,24 @@ false
   { brief: 'rule ok', more: 'After autumn comes winter' },
   { brief: 'rules passed', more: 'Rules pass count is 2' },
   { brief: 'rules error', more: 'Periodic rules detected' }
+]
+[
+  {
+    name: 'season',
+    value: 'winter',
+    history: [
+      'init: Initial value of season fact',
+      'rule: After winter comes spring',
+      'rule: After spring comes summer',
+      'rule: After summer comes autumn',
+      'rule: After autumn comes winter',
+      'rule: After winter comes spring',
+      'rule: After spring comes summer',
+      'rule: After summer comes autumn',
+      'rule: After autumn comes winter'
+    ],
+    changed: true
+  }
 ]
 */
 ```
