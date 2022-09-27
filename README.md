@@ -280,8 +280,8 @@ Add one fact to the system. If there is a fact with the same name in system it w
 ```js
 let fact = { 
   name: "wheels",
-  value: 4, 
-  description: "Transport has 4 wheels" 
+  value: 2, 
+  description: "Transport has 2 wheels" 
 };
 let isTrigger = true;
 es.factAdd(fact, isTrigger);
@@ -299,7 +299,7 @@ let facts = [
   {
     name: "wheels",
     value: 4,
-    description: "This transport has 2 wheels"
+    description: "This transport has 4 wheels"
   },
   {
     name: "motor",
@@ -324,19 +324,26 @@ console.log (factsArray);
   {
     name: 'wheels',
     value: 4,
-    history: [ 'This transport has 2 wheels' ],
+    history: [
+      'init: Transport has 2 wheels',
+      'init: This transport has 4 wheels'
+    ],
     changed: false
   },
   {
     name: 'motor',
     value: 'missing',
-    history: [ 'This transport does`t have motor' ],
+    history: [ 
+      'init: This transport does`t have motor' 
+    ],
     changed: false
   },
   {
     name: 'transport',
     value: 'skateboard',
-    history: [ 'Transport with 4 wheels and without engine is a skateboard' ],
+    history: [ 
+      'rule: Transport with 4 wheels and without engine is a skateboard' 
+    ],
     changed: true
   }
 ]
@@ -368,12 +375,17 @@ Returns fact by the name.
 let name = "wheels"; 
 let fact = es.factGet(name);
 console.log (fact);
-// {
-//   name: 'wheels',
-//   value: 4,
-//   history: [ 'Transport has 4 wheels', 'This transport has 2 wheels' ],
-//   changed: false
-// }
+/*
+{
+  name: 'wheels',
+  value: 4,
+  history: [
+    'init: Transport has 2 wheels',
+    'init: This transport has 4 wheels'
+  ],
+  changed: false
+}
+*/
 ```
 * name - fact name, string, mandatory
 * value - fact value, number or string
@@ -445,7 +457,11 @@ console.log (events);
   },
   { 
     brief: 'fact add', 
-    more: 'This transport has 2 wheels' 
+    more: 'Transport has 2 wheels' 
+  },
+  { 
+    brief: 'fact add', 
+    more: 'This transport has 4 wheels' 
   },
   { 
     brief: 'fact add', 

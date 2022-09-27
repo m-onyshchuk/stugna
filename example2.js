@@ -65,8 +65,8 @@ console.log (rulesAll);
 ///
 let fact = {
   name: "wheels",
-  value: 4,
-  description: "Transport has 4 wheels"
+  value: 2,
+  description: "Transport has 2 wheels"
 };
 isTrigger = true;
 es.factAdd(fact, isTrigger);
@@ -76,7 +76,7 @@ let facts = [
   {
     name: "wheels",
     value: 4,
-    description: "This transport has 2 wheels"
+    description: "This transport has 4 wheels"
   },
   {
     name: "motor",

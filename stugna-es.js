@@ -77,10 +77,10 @@ class StugnaES {
       this.eventAdd('fact fail', ERROR_STUGNA_SPACE_IN_FACT_NAME + name);
       return;
     }
-    let factNew = new Fact(name, value, description);
+    let factNew = new Fact(name, value, `init: ${description}`);
     let factOld = this.#facts[name];
     if (factOld) {
-      factOld.history.push(description);
+      factOld.history.push(`init: ${description}`);
       factNew.history = factOld.history;
     }
     this.#facts[name] = factNew;
@@ -163,6 +163,8 @@ class StugnaES {
     for (let fact of facts) {
       if (fact.name !== undefined && fact.value !== undefined && fact.description !== undefined) {
         this.factAdd(fact, false);
+      } else {
+        this.eventAdd('fact skip', JSON.stringify(fact));
       }
     }
     if (isTrigger) {
@@ -285,7 +287,7 @@ class StugnaES {
       let factsChanged = 0;
       for (let rule of this.#rules) {
         if (rule.check(this.#facts)) {
-          let factNew = new Fact(rule.fact, rule.value, rule.description);
+          let factNew = new Fact(rule.fact, rule.value, `rule: ${rule.description}`);
           let factOld = this.#facts[rule.fact];
           if (factOld) {
             if (factOld.value === factNew.value) {

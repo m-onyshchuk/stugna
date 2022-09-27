@@ -112,7 +112,7 @@ class Rule {
     if (description)
       this.description = description; // detailed rule description
     else
-      this.description = `rule: ${condition}`;
+      this.description = condition;
     this.tokens = null;              // parsed rule tokens
     this.calc = null;                // reverse polish notation for rule condition calculation
     this.error = null;               // rule`s error
