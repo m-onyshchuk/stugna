@@ -18,6 +18,7 @@ class StugnaES {
   #events;
   #toSaveEvents;
   #passCountMax;
+  #factsAreOrdered;
 
   /**
    * @param options {Object}
@@ -38,6 +39,7 @@ class StugnaES {
     this.#events = [];
     this.#toSaveEvents = toSaveEvents;
     this.#passCountMax = passCountMax;
+    this.#factsAreOrdered = true;
   };
 
   /**
@@ -84,7 +86,7 @@ class StugnaES {
     this.#facts[name] = factNew;
     this.eventAdd('fact add', description);
     if (isTrigger) {
-      this.regularize();
+      this.order();
     }
   }
 
@@ -98,7 +100,7 @@ class StugnaES {
 
   /**
    * @param name {string}
-   * @returns {{name, history: (*|string[]|[string]|History), value: *}|null}
+   * @returns {{name, value: *, history: (*|string[]|[string]|History), changed}|null}
    */
   factGet(name) {
     if (!this.#facts[name]) {
@@ -106,7 +108,8 @@ class StugnaES {
     }
     let value = this.#facts[name].value;
     let history = this.#facts[name].history;
-    return {name, value, history};
+    let changed = this.#facts[name].changed;
+    return {name, value, history, changed};
   }
 
   /**
@@ -163,15 +166,20 @@ class StugnaES {
       }
     }
     if (isTrigger) {
-      this.regularize();
+      this.order();
     }
   }
 
   /**
-   * @returns {{name: string, value: (number|string), history: string[]}[]}
+   * @returns {{name: string, value: (number|string), history: string[], changed: boolean}[]}
    */
   factsAllAsArray() {
-    return Object.values(this.#facts).map(fact => { return {name: fact.name, value: fact.value, history: fact.history} });
+    return Object.values(this.#facts).map(fact => { return {
+      name: fact.name,
+      value: fact.value,
+      history: fact.history,
+      changed: fact.changed
+    } });
   }
 
   /**
@@ -182,6 +190,13 @@ class StugnaES {
       facts[name] = this.#facts[name].value;
     }
     return facts;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  factsAreOrdered () {
+    return this.#factsAreOrdered;
   }
 
   /**
@@ -212,7 +227,7 @@ class StugnaES {
       }); // by priority ASC
       this.eventAdd('rule add', description);
       if (isTrigger) {
-        this.regularize();
+        this.order();
       }
     }
   }
@@ -234,7 +249,7 @@ class StugnaES {
       }
     }
     if (isTrigger) {
-      this.regularize();
+      this.order();
     }
   }
 
@@ -262,7 +277,8 @@ class StugnaES {
   /**
    * Regularize all rules and facts
    */
-  regularize () {
+  order () {
+    this.#factsAreOrdered = false;
     let passCount = 1;
     while (true) {
       // one pass - check all rules
@@ -278,16 +294,18 @@ class StugnaES {
             factOld.history.push(rule.description);
             factNew.history = factOld.history;
           }
+          factNew.changed = true;
           this.#facts[rule.fact] = factNew;
           this.eventAdd('rule ok', rule.description);
           factsChanged++;
         }
       }
-
+      
       if (!factsChanged) {
+        this.#factsAreOrdered = true;
         break;
       }
-
+        
       this.eventAdd('rules passed', `Rules pass count is ${passCount}`);
 
       // check pass count
@@ -296,6 +314,7 @@ class StugnaES {
         if (this.#toSaveEvents) {
           this.eventAdd('rules error', ERROR_STUGNA_PERIODIC_RULES);
         }
+        this.#factsAreOrdered = false;
         break;
       }
     }

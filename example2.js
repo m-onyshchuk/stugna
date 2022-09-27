@@ -117,6 +117,15 @@ let unknown = es.factGetPredecessorsUnknown(name);
 console.log ('\n--- factGetPredecessorsUnknown ---');
 console.log (unknown);
 
+let ordered = es.factsAreOrdered();
+console.log (ordered);
+
+///
+// es.factsClear();
+
 let events = es.eventsAll();
 console.log ('\n--- eventsAll ---');
 console.log (events);
+
+///
+// es.eventsClear();

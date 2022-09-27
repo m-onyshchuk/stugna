@@ -48,6 +48,9 @@ let rules = [
 let isTrigger = true;
 es.rulesImport(rules, isTrigger);
 
+let ordered = es.factsAreOrdered();
+console.log (ordered);
+
 let events = es.eventsAll();
 console.log (events);
 

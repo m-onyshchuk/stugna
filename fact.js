@@ -28,6 +28,7 @@ class Fact {
       description = 'fact created (1)';
     }
     this.history = [description];
+    this.changed = false; // false - init fact value; true - fact value changed by rules
   }
 }
 

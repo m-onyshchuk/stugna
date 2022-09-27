@@ -17,6 +17,8 @@ knowledge base can be serialized into/from one JSON file.
   - [factGet](#factget)
   - [factGetPredecessorsWanted](#factgetpredecessorswanted)
   - [factGetPredecessorsUnknown](#factgetpredecessorsunknown)
+  - [factsAreOrdered](#factsareordered)
+  - [factsClear](#factsclear)
   - [eventsAll](#eventsall)
   - [eventsClear](#eventsclear)
 - [Periodic rules](#periodic-rules)
@@ -92,13 +94,15 @@ console.log(factWanted);
 // {
 //   name: 'transport',
 //   value: 'skateboard',
-//   history: [ "rule: wheels = 4 AND motor = 'missing'" ]
+//   history: [ "rule: wheels = 4 AND motor = 'missing'" ],
+//   changed: true
 // }
 ```
 Object `factWanted` has the following fields:
 * name - fact name
 * value - fact value
-* history - fact history or changes reason list 
+* history - fact history or changes reason list
+* changed - whether the fact was changed by the rules 
 
 ## API details 
 The methods of the StugnaES class are described below. 
@@ -320,17 +324,20 @@ console.log (factsArray);
   {
     name: 'wheels',
     value: 4,
-    history: [ 'This transport has 2 wheels' ]
+    history: [ 'This transport has 2 wheels' ],
+    changed: false
   },
   {
     name: 'motor',
     value: 'missing',
-    history: [ 'This transport does`t have motor' ]
+    history: [ 'This transport does`t have motor' ],
+    changed: false
   },
   {
     name: 'transport',
     value: 'skateboard',
-    history: [ 'Transport with 4 wheels and without engine is a skateboard' ]
+    history: [ 'Transport with 4 wheels and without engine is a skateboard' ],
+    changed: true
   }
 ]
 */
@@ -363,12 +370,15 @@ let fact = es.factGet(name);
 console.log (fact);
 // {
 //   name: 'wheels',
-//           value: 4,
-//         history: [ 'Transport has 4 wheels', 'This transport has 2 wheels' ]
+//   value: 4,
+//   history: [ 'Transport has 4 wheels', 'This transport has 2 wheels' ],
+//   changed: false
 // }
 ```
 * name - fact name, string, mandatory
-* return value - fact value, number, string or null for unknown facts 
+* value - fact value, number or string
+* history - fact changes history by rules
+* changed - whether the fact was changed by the rules
 
 ### factGetPredecessorsWanted
 Returns all fact names which may be needed to determine asked fact.
@@ -391,6 +401,21 @@ console.log (unknown);
 ```
 * name - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
+
+### factsAreOrdered
+Returns boolean flag - are facts ordered? Facts can be unordered only if [periodic rules](#periodic-rules) detected 
+and system can`t order all facts. 
+```js
+let ordered = es.factsAreOrdered();
+console.log (ordered);
+```
+
+### factsClear
+Cleans all facts in the system.
+```js
+let ordered = es.factsAreOrdered();
+console.log (ordered);
+```
 
 ### eventsAll
 Returns all events if logging was turned on in constructor.
@@ -497,10 +522,14 @@ let rules = [
 let isTrigger = true;
 es.rulesImport(rules, isTrigger);
 
+let ordered = es.factsAreOrdered();
+console.log (ordered);
+
 let events = es.eventsAll();
 console.log (events);
 
 /*
+false
 [
   { brief: 'fact add', more: 'Initial value of season fact' },
   { brief: 'rule add', more: 'After winter comes spring' },
