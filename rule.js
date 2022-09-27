@@ -10,12 +10,20 @@ const {
 } = require('./errors-rule');
 
 const OPERATORS = {
-  '(' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
-  ')' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+  '(' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+  ')' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+
+  '+' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value + b.value } },
+  '-' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value - b.value } },
+  '*' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value * b.value } },
+  '/' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return b.value !== 0 ? a.value / b.value : 0 } },
+
   '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value < b.value } },
   '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value > b.value } },
   '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value === b.value } },
   '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value !== b.value } },
+  'LIKE': {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value.toString().indexOf(b.value.toString()) !== -1 } },
+
   'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value && b.value } },
   'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value || b.value } },
   'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a.value } }
@@ -117,6 +125,7 @@ class Rule {
   }
 
   /**
+   * Validate rule inputs
    */
   validate () {
     if (!this.condition) {
@@ -137,6 +146,46 @@ class Rule {
   }
 
   /**
+   * @param tokens {Object[]}
+   */
+  checkUnaryMinus(tokens) {
+    let result = [];
+    let tokenPrev = null;
+    for (let i=0; i<tokens.length; i++) {
+      let tokenCurrent = tokens[i];
+      let tokenNext = null;
+      let tokenNextIsNumber = false;
+      if (i < tokens.length-1) {
+        tokenNext = tokens[i+1];
+        tokenNextIsNumber = (tokenNext.type === TOKEN_NUMBER);
+      }
+      if (tokenCurrent.type === TOKEN_OPERATOR && tokenCurrent.value === '-' && tokenNextIsNumber) {
+        let isUnaryMinus = false;
+        if (tokenPrev === null) {
+          isUnaryMinus = true;
+        } else {
+          if (tokenPrev.type !== TOKEN_NUMBER) {
+            isUnaryMinus = true;
+          }
+        }
+        if (isUnaryMinus) {
+          // it`s unary minus
+          tokenNext.value *= -1;
+        } else {
+          // it`s usual minus
+          result.push(tokenCurrent);
+        }
+      } else {
+        // it`s not minus
+        result.push(tokenCurrent);
+      }
+      tokenPrev = tokenCurrent;
+    }
+    return result;
+  }
+
+  /**
+   * Lexical analysis
    * @param raw {string}
    */
   tokenize(raw) {
@@ -241,9 +290,15 @@ class Rule {
       return;
     }
 
+    tokens = this.checkUnaryMinus(tokens);
+
     this.tokens = tokens;
   }
 
+  /**
+   * Shunting yard algorithm - converting infix notation to reverse polish notation
+   * https://en.wikipedia.org/wiki/Shunting_yard_algorithm
+   */
   parse() {
     if (this.error) {
       return;
@@ -319,6 +374,9 @@ class Rule {
     this.calc = output;
   }
 
+  /**
+   * Collect variable names from parsed reverse polish notation
+   */
   collectVariables() {
     if (this.error) {
       return;
@@ -334,10 +392,17 @@ class Rule {
     }
   }
 
+  /**
+   * Get parsing error
+   */
   getError() {
     return this.error;
   }
 
+  /**
+   * Get prepared reverse polish notation from this.calc
+   * @returns {string}
+   */
   getCalcString() {
     let str = '';
     if (this.calc) {
@@ -346,6 +411,11 @@ class Rule {
     return str;
   }
 
+  /**
+   * Calc prepared reverse polish notation in this.calc
+   * @param facts
+   * @returns {boolean}
+   */
   check (facts) {
     // 1) check wanted variables
     for (let variable of this.variables) {

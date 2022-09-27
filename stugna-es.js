@@ -1,6 +1,10 @@
 'use strict';
 const {Fact} = require("./fact");
 const {Rule} = require("./rule");
+const {
+  ERROR_STUGNA_SPACE_IN_FACT_NAME,
+  ERROR_STUGNA_PERIODIC_RULES
+} = require('./errors-stugna-es');
 
 const regexpWhiteSpaces = new RegExp('\\s+', 'g');
 
@@ -11,21 +15,29 @@ class StugnaES {
   // private fields
   #rules;
   #facts;
-  #toSaveEvents;
   #events;
+  #toSaveEvents;
+  #passCountMax;
 
   /**
    * @param options {Object}
    */
   constructor(options = undefined) {
     let toSaveEvents = true;
-    if (options && options.toSaveEvents !== undefined) {
-      toSaveEvents = options.toSaveEvents;
+    let passCountMax = 16;
+    if (options) {
+      if (options.toSaveEvents !== undefined) {
+        toSaveEvents = options.toSaveEvents;
+      }
+      if (options.passCountMax !== undefined) {
+        passCountMax = options.passCountMax;
+      }
     }
     this.#rules = [];
     this.#facts = {};
-    this.#toSaveEvents = toSaveEvents;
     this.#events = [];
+    this.#toSaveEvents = toSaveEvents;
+    this.#passCountMax = passCountMax;
   };
 
   /**
@@ -60,7 +72,7 @@ class StugnaES {
    */
   factAdd({name, value, description}, isTrigger = true) {
     if (regexpWhiteSpaces.test(name)) {
-      this.eventAdd('fact fail', `Try to add fact with spaces in name: '${name}'`);
+      this.eventAdd('fact fail', ERROR_STUGNA_SPACE_IN_FACT_NAME + name);
       return;
     }
     let factNew = new Fact(name, value, description);
@@ -88,7 +100,7 @@ class StugnaES {
    * @param name {string}
    * @returns {{name, history: (*|string[]|[string]|History), value: *}|null}
    */
-  factGetValue(name) {
+  factGet(name) {
     if (!this.#facts[name]) {
       return null;
     }
@@ -248,11 +260,12 @@ class StugnaES {
   }
 
   /**
-   *
+   * Regularize all rules and facts
    */
   regularize () {
-    let passCount = 0;
+    let passCount = 1;
     while (true) {
+      // one pass - check all rules
       let factsChanged = 0;
       for (let rule of this.#rules) {
         if (rule.check(this.#facts)) {
@@ -270,13 +283,18 @@ class StugnaES {
           factsChanged++;
         }
       }
+
       if (!factsChanged) {
         break;
       }
+
+      this.eventAdd('rules passed', `Rules pass count is ${passCount}`);
+
+      // check pass count
       passCount++;
-      if (passCount > 10) {
+      if (passCount > this.#passCountMax) {
         if (this.#toSaveEvents) {
-          this.#events.push('error', 'periodic rules detected');
+          this.eventAdd('rules error', ERROR_STUGNA_PERIODIC_RULES);
         }
         break;
       }

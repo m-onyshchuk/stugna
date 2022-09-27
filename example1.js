@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * Example from "Usage example"
+ */
 const {StugnaES} = require("./stugna-es");
 let es = new StugnaES();
 
@@ -45,7 +47,7 @@ let facts = [
 ];
 es.factsImport(facts);
 
-let factWanted = es.factGetValue(`transport`);
+let factWanted = es.factGet(`transport`);
 console.log(factWanted);
 // {
 //   name: 'transport',

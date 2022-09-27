@@ -3,9 +3,7 @@
 const {Rule} = require('./rule');
 
 const calculations = [
-  {
-    rule: "NOT FALSE", result: true, facts: {}
-  },
+  { rule: "'lazy_dog' = 'lazy' + '_' + 'dog'", result: true, facts: {} },
 ];
 for (let item of calculations) {
   let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');

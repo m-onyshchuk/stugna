@@ -14,11 +14,12 @@ knowledge base can be serialized into/from one JSON file.
   - [factsAllAsArray](#factsallasarray)
   - [factsAllAsMap](#factsallasmap)
   - [factIsKnown](#factisknown)
-  - [factGetValue](#factgetvalue)
+  - [factGet](#factget)
   - [factGetPredecessorsWanted](#factgetpredecessorswanted)
   - [factGetPredecessorsUnknown](#factgetpredecessorsunknown)
   - [eventsAll](#eventsall)
   - [eventsClear](#eventsclear)
+- [Periodic rules](#periodic-rules)
 
 ## Usage example
 To illustrate how a small expert system can function with rules and facts, we will build one in this example. 
@@ -56,11 +57,12 @@ es.rulesImport(rules);
 ```
 Each of these 4 rules contain mandatory fields:
 * condition - a simple logic expression with operators >, <, =, <>, AND, OR, NOT and parentheses
-* factName - a fact's name that will be added to the system if the condition is met. Fact names can be compared to variable names. 
+* factName - a fact's name that will be added to the system if the condition is met. Fact names can be compared to 
+  variable names. 
 * factValue - fact's value to add to system in success condition case, i.e. value of variable.
 
-Being that simple, our tiny expert system is somewhat useful already. We can ask it what knowledge (facts set) does it need to get info about 
-wanted `transport` fact:
+Being that simple, our tiny expert system is somewhat useful already. We can ask it what knowledge (facts set) does 
+it need to get info about wanted `transport` fact:
 ```js
 let factsUnknown = es.factGetPredecessorsUnknown("transport");
 console.log(factsUnknown);
@@ -85,7 +87,7 @@ es.factsImport(facts);
 ```
 Now, we can query original parent fact:
 ```js
-let factWanted = es.factGetValue("transport");
+let factWanted = es.factGet("transport");
 console.log(factWanted);
 // {
 //   name: 'transport',
@@ -106,12 +108,15 @@ Instance creating
 ```js
 const {StugnaES} = require("stugna-es");
 let options = {
-  toSaveEvents: true
+  toSaveEvents: true,
+  passCountMax: 16
 };
 let es = new StugnaES(options);
 ```
 * options - object with optional fields:
-  * toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.  
+  * toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.
+  * passCountMax - parameter to limit passing by rules list. Read more in [periodic rules](#periodic-rules). 
+    Default value is `16`.    
 
 ### ruleAdd
 Add one rule to the system.
@@ -128,22 +133,45 @@ es.ruleAdd(rule, isTrigger);
 ```
 * condition - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
-  * fact names 
-  * boolean values, `TRUE` or `FALSE`
+  * fact names. Each not reserved word without single quotes is labeled as fact name. 
+  * boolean values, reserved words `TRUE` or `FALSE`
   * numbers, `integer` or `float`
   * strings. Each string must be in single quotes. All words without single quotes will be labeled as fact names.  
   * operators:
-    * `>` - greater than operator returns true if the left operand is greater than the right operand, and false otherwise, example: `wheels > 4`
-    * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, example: `wheels < 4`
-    * `=` - equality operator checks whether its two operands are equal, returning a boolean result, equality is strict, example: `motor = 'present'`
-    * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, example: `motor <> 'present'`
-    * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all the operands are true. Otherwise, it will be false.
-    * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its operands is true.
-    * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa, example: `NOT FALSE`
+    * `>` - greater than operator returns true if the left operand is greater than the right operand, and false 
+      otherwise, example: `wheels > 4`
+    * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, 
+      example: `wheels < 4`
+    * `=` - equality operator checks whether its two operands are equal, returning a boolean result, equality is strict, 
+      example: `motor = 'present'`
+    * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, 
+      example: `motor <> 'present'`
+    * `LIKE` - operator is similar SQL LIKE operator but without wildcard support (% and _). It returns true if left 
+      operand contains substring from right operand. Examples: `'lazy dog' LIKE 'dog'` return true and 
+      `'lazy dog' LIKE 'fox'` returns false.  
+    * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all 
+      the operands are true. Otherwise, it will be false.
+    * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its 
+      operands is true.
+    * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa, 
+      example: `NOT FALSE`
+    * `+` - arithmetic addition operator for numbers and concatenation operator for strings, example with numbers: 
+      `cats > dogs + 2`, example with strings: `'lazy_dog' = 'lazy' + '_' + 'dog'`   
+    * `-` - arithmetic subtraction operator, example: `cats > dogs - 2`
+    * `*` - multiplication arithmetic operator, example: `cats > dogs * 2`
+    * `/` - division arithmetic operator, example: `cats > dogs / 2`
   * parentheses to group operators, example: `(wheels = 4 AND motor = 'present') OR weight > 1000`
-* factName - name of new fact, which will be added if condition is met. Field must be string, mandatory. 
-* factValue - value of new fact, which will be added if condition is met. Field can be numerical (`integer` or `float`) 
-  or string, mandatory.
+  
+  All reserved words (`TRUE`, `FALSE`, `AND`, `OR`, `NOT`, `LIKE`) are case sensitive. Operator precedence by group, 
+  high to low:       
+  * `(` `)`
+  * `+` `-` `*` `/`
+  * `<` `>` `=` `<>` `LIKE`
+  * `AND` `OR` `NOT`
+ 
+* factName - name of new fact, which will be added if condition is met. Field must be a string without spaces, mandatory. 
+* factValue - value of new fact, which will be added if condition is met. Field can be boolean (`TRUE` or `FALSE`), 
+  numerical (`integer` or `float`) or string, mandatory.
 * priority - rule priority, number, optional, default value is `1`. All rules are processing by order with priority.
   Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
   is undetermined.
@@ -327,13 +355,17 @@ console.log (isKnown);
 * name - fact name, string, mandatory
 * return value - boolean
 
-### factGetValue
-Returns fact value by the name.
+### factGet
+Returns fact by the name.
 ```js
 let name = "wheels"; 
-let value = es.factGetValue(name);
-console.log (value);
-// 4
+let fact = es.factGet(name);
+console.log (fact);
+// {
+//   name: 'wheels',
+//           value: 4,
+//         history: [ 'Transport has 4 wheels', 'This transport has 2 wheels' ]
+// }
 ```
 * name - fact name, string, mandatory
 * return value - fact value, number, string or null for unknown facts 
@@ -398,6 +430,10 @@ console.log (events);
   {
     brief: 'rule ok',
     more: 'Transport with 4 wheels and without engine is a skateboard'
+  },
+  { 
+    brief: 'rules passed', 
+    more: 'Rules pass count is 1' 
   }
 ]
 */
@@ -407,4 +443,86 @@ console.log (events);
 Cleans all events in the system.
 ```js
 es.eventsClear();
+```
+
+## Periodic rules
+Sometimes a situation may arise when the system has several rules that create a periodic change in facts during one pass. 
+In such a situation, an endless cycle of changing facts arises, which can only be interrupted artificially by setting 
+the maximum number of passes through the list of rules. This parameter is called `passCountMax` and is set in the 
+constructor. Below is an example of a periodic set of rules and the message that appears in the logs when the number 
+of passes exceeds `passCountMax`.
+```js
+const {StugnaES} = require("./stugna-es");
+let options = {
+  toSaveEvents: true,
+  passCountMax: 2
+};
+let es = new StugnaES(options);
+
+let facts = [
+  {
+    name: "season",
+    value: "winter",
+    description: "Initial value of season fact"
+  }
+];
+es.factsImport(facts);
+
+let rules = [
+  {
+    condition: "season = 'winter'",
+    factName: "season",
+    factValue: "spring",
+    description: "After winter comes spring"
+  },
+  {
+    condition: "season = 'spring'",
+    factName: "season",
+    factValue: "summer",
+    description: "After spring comes summer"
+  },
+  {
+    condition: "season = 'summer'",
+    factName: "season",
+    factValue: "autumn",
+    description: "After summer comes autumn"
+  },
+  {
+    condition: "season = 'autumn'",
+    factName: "season",
+    factValue: "winter",
+    description: "After autumn comes winter"
+  },
+];
+let isTrigger = true;
+es.rulesImport(rules, isTrigger);
+
+let events = es.eventsAll();
+console.log (events);
+
+/*
+[
+  { brief: 'fact add', more: 'Initial value of season fact' },
+  { brief: 'rule add', more: 'After winter comes spring' },
+  { brief: 'rule add', more: 'After spring comes summer' },
+  { brief: 'rule add', more: 'After summer comes autumn' },
+  { brief: 'rule add', more: 'After autumn comes winter' },
+  { brief: 'rule ok', more: 'After winter comes spring' },
+  { brief: 'rule ok', more: 'After spring comes summer' },
+  { brief: 'rule ok', more: 'After summer comes autumn' },
+  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'rules passed', more: 'Rules pass count is 0' },
+  { brief: 'rule ok', more: 'After winter comes spring' },
+  { brief: 'rule ok', more: 'After spring comes summer' },
+  { brief: 'rule ok', more: 'After summer comes autumn' },
+  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
+  { brief: 'rule ok', more: 'After winter comes spring' },
+  { brief: 'rule ok', more: 'After spring comes summer' },
+  { brief: 'rule ok', more: 'After summer comes autumn' },
+  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'rules passed', more: 'Rules pass count is 2' },
+  { brief: 'rules error', more: 'Periodic rules detected' }
+]
+*/
 ```

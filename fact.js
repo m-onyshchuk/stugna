@@ -1,17 +1,6 @@
 'use strict';
 
 /**
- * @property {string} name - fact name
- * @property {number|string} value - fact value
- * @property {string} description - fact description
- */
-class FactData {
-  name;
-  value;
-  description;
-}
-
-/**
  *
  */
 class Fact {
@@ -42,4 +31,4 @@ class Fact {
   }
 }
 
-module.exports = {FactData, Fact}
+module.exports = {Fact}

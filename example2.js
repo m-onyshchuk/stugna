@@ -1,10 +1,15 @@
 'use strict';
+/**
+ * Example from "API details"
+ */
+///
 const {StugnaES} = require("./stugna-es");
 let options = {
   toSaveEvents: true
 };
 let es = new StugnaES(options);
 
+///
 let rule = {
   condition: "weight > 20000",
   factName: "transport",
@@ -12,8 +17,10 @@ let rule = {
   priority: 10,
   description: "Transport with weight more than 20 ton looks like a bus"
 };
-es.ruleAdd(rule);
+let isTrigger = true;
+es.ruleAdd(rule, isTrigger);
 
+///
 let rules = [
   {
     condition: "wheels = 4 AND motor = 'present'",
@@ -44,8 +51,27 @@ let rules = [
     description: "Transport with 2 wheels and without engine is a bike"
   }
 ];
-es.rulesImport(rules);
+isTrigger = true;
+es.rulesImport(rules, isTrigger);
 
+///
+let rulesAll = es.rulesAll();
+console.log ('\n--- rulesAll ---');
+console.log (rulesAll);
+
+///
+// es.rulesClear();
+
+///
+let fact = {
+  name: "wheels",
+  value: 4,
+  description: "Transport has 4 wheels"
+};
+isTrigger = true;
+es.factAdd(fact, isTrigger);
+
+///
 let facts = [
   {
     name: "wheels",
@@ -60,24 +86,37 @@ let facts = [
 ];
 es.factsImport(facts);
 
+///
 let factsArray = es.factsAllAsArray();
-console.log ('--- factsArray ---');
+console.log ('\n--- factsArray ---');
 console.log (factsArray);
 
+///
 let factsMap = es.factsAllAsMap();
-console.log ('--- factsMap ---');
+console.log ('\n--- factsMap ---');
 console.log (factsMap);
 
-let name = 'transport';
+///
+let name = "wheels";
+let isKnown = es.factIsKnown(name);
+console.log ('\n--- factIsKnown ---');
+console.log (isKnown);
 
+///
+name = "wheels";
+fact = es.factGet(name);
+console.log ('\n--- factGet ---');
+console.log (fact);
+
+name = 'transport';
 let wanted = es.factGetPredecessorsWanted(name);
-console.log ('--- wanted ---');
+console.log ('\n--- factGetPredecessorsWanted ---');
 console.log (wanted);
 
 let unknown = es.factGetPredecessorsUnknown(name);
-console.log ('--- unknown ---');
+console.log ('\n--- factGetPredecessorsUnknown ---');
 console.log (unknown);
 
 let events = es.eventsAll();
-console.log ('--- events ---');
+console.log ('\n--- eventsAll ---');
 console.log (events);
