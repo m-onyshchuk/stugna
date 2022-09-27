@@ -413,8 +413,7 @@ console.log (ordered);
 ### factsClear
 Cleans all facts in the system.
 ```js
-let ordered = es.factsAreOrdered();
-console.log (ordered);
+es.factsClear();
 ```
 
 ### eventsAll
