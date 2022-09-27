@@ -73,7 +73,7 @@ let facts = [
   {
     name: "wheels",
     value: 4,
-    description: "This transport has 2 wheels"
+    description: "This transport has 4 wheels"
   },
   {
     name: "motor",
