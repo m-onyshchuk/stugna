@@ -511,11 +511,6 @@ console.log (events);
   { brief: 'rule ok', more: 'After spring comes summer' },
   { brief: 'rule ok', more: 'After summer comes autumn' },
   { brief: 'rule ok', more: 'After autumn comes winter' },
-  { brief: 'rules passed', more: 'Rules pass count is 0' },
-  { brief: 'rule ok', more: 'After winter comes spring' },
-  { brief: 'rule ok', more: 'After spring comes summer' },
-  { brief: 'rule ok', more: 'After summer comes autumn' },
-  { brief: 'rule ok', more: 'After autumn comes winter' },
   { brief: 'rules passed', more: 'Rules pass count is 1' },
   { brief: 'rule ok', more: 'After winter comes spring' },
   { brief: 'rule ok', more: 'After spring comes summer' },
@@ -523,6 +518,7 @@ console.log (events);
   { brief: 'rule ok', more: 'After autumn comes winter' },
   { brief: 'rules passed', more: 'Rules pass count is 2' },
   { brief: 'rules error', more: 'Periodic rules detected' }
+]
 ]
 */
 ```
