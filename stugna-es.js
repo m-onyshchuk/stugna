@@ -21,9 +21,9 @@ class StugnaES {
   #factsAreOrdered;
 
   /**
-   * @param options {Object}
+   * @param options {null|Object}
    */
-  constructor(options = undefined) {
+  constructor(options = null) {
     let toSaveEvents = true;
     let passCountMax = 16;
     if (options) {
