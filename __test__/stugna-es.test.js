@@ -6,7 +6,7 @@ const {
 
 const cases = [
   {
-    name: "Students, classroom",
+    name: "Students in the classroom",
     input: {
       rules: [
         {
@@ -148,7 +148,7 @@ describe('StugnaES tests', () => {
           let factExpected = item.expected.facts[factName];
           expect(factExpected.value).toEqual(factsAll[factName]);
           let predecessors = es.factGetPredecessorsWanted(factName).sort();
-          expect(predecessors).toEqual(factExpected.predecessors.sort());
+          expect(factExpected.predecessors.sort()).toEqual(predecessors);
         }
       }
 

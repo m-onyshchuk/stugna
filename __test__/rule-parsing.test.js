@@ -52,8 +52,8 @@ describe('rule parsing', () => {
     for (let item of parsing) {
       test(`condition: ${item.rule}`, () => {
         let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');
-        expect(rule.getCalcString()).toEqual(item.calc);
-        expect(rule.getError()).toEqual(item.error);
+        expect(item.calc).toEqual(rule.getCalcString());
+        expect(item.error).toEqual(rule.getError());
       });
     }
 })

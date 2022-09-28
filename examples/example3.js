@@ -3,7 +3,9 @@
  * Example from "Periodic rules"
  */
 
-const {StugnaES} = require("./stugna-es");
+// const {StugnaES} = require("stugna-es"); // for standalone run
+const {StugnaES} = require("../stugna-es"); // for local run
+
 let options = {
   toSaveEvents: true,
   passCountMax: 2

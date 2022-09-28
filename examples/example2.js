@@ -3,7 +3,8 @@
  * Example from "API details"
  */
 ///
-const {StugnaES} = require("./stugna-es");
+// const {StugnaES} = require("stugna-es"); // for standalone run
+const {StugnaES} = require("../stugna-es"); // for local run
 let options = {
   toSaveEvents: true
 };

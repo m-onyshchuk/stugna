@@ -219,7 +219,7 @@ let rules = [
 let isTrigger = true;
 es.rulesImport(rules, isTrigger);
 ```
-* rules - array of objects with fields like in `ruleAdd` method
+* rules - array of objects with fields like in [ruleAdd](#ruleadd) method
 * isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
@@ -310,7 +310,7 @@ let facts = [
 let isTrigger = true;
 es.factsImport(facts, isTrigger);
 ```
-* facts - array of objects with fields like in `factAdd` method
+* facts - array of objects with fields like in [factAdd](#factadd) method
 * isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
@@ -488,11 +488,11 @@ es.eventsClear();
 ## Periodic rules
 Sometimes a situation may arise when the system has several rules that create a periodic change in facts during one pass. 
 In such a situation, an endless cycle of changing facts arises, which can only be interrupted artificially by setting 
-the maximum number of passes through the list of rules. This parameter is called `passCountMax` and is set in the 
-constructor. Below is an example of a periodic set of rules and the message that appears in the logs when the number 
-of passes exceeds `passCountMax`.
+the maximum number of passes through the list of rules. This parameter is called `passCountMax` and is set in the
+[constructor](#constructor). Below is an example of a periodic set of rules and the message that appears in the logs 
+when the number of passes exceeds `passCountMax`.
 ```js
-const {StugnaES} = require("./stugna-es");
+const {StugnaES} = require("stugna-es");
 let options = {
   toSaveEvents: true,
   passCountMax: 2

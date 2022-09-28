@@ -417,56 +417,74 @@ class Rule {
    * @returns {boolean}
    */
   check (facts) {
-    // 1) check wanted variables
-    for (let variable of this.variables) {
-      if (facts[variable] === undefined) {
-        return false; // rule variable is absent, break rule checking
-      }
-    }
-
-    // 2) calc reverse polish notation
-    let stack = [];
-    for (let item of this.calc) {
-      let token = Object.assign({}, item);
-      switch (token.type) {
-        case TOKEN_BOOLEAN:
-        case TOKEN_NUMBER:
-        case TOKEN_STRING:
-          stack.push(token);
-          break;
-
-        case TOKEN_VARIABLE:
-          let name = token.value;
-          let value = facts[name].value;
-          token.value = value;
-          stack.push(token);
-          break;
-
-        case TOKEN_OPERATOR:
-          let operator = OPERATORS[token.value];
-          let a = null;
-          let b = null;
-          if (operator.arg_count === 2) {
-            b = stack.pop();
-            a = stack.pop();
-          } else {
-            a = stack.pop();
-          }
-          let result = operator.calc(a, b);
-          stack.push({value:result, type:TOKEN_BOOLEAN});
-          break;
-
-        default:
-          // error
-          return false;
-      }
-    }
-
     let result = false;
-    if (stack.length === 1) {
-      result = stack[0].value;
-    } else {
-      // error
+    let allowConsoleLog = !PROD;
+    try {
+      // 1) check wanted variables
+      for (let variable of this.variables) {
+        if (facts[variable] === undefined) {
+          return false; // rule variable is absent, break rule checking
+        }
+      }
+
+      // 2) calc reverse polish notation
+      let stack = [];
+      for (let item of this.calc) {
+        let token = Object.assign({}, item);
+        switch (token.type) {
+          case TOKEN_BOOLEAN:
+          case TOKEN_NUMBER:
+          case TOKEN_STRING:
+            stack.push(token);
+            break;
+
+          case TOKEN_VARIABLE:
+            let name = token.value;
+            let value = facts[name].value;
+            token.value = value;
+            stack.push(token);
+            break;
+
+          case TOKEN_OPERATOR:
+            let operator = OPERATORS[token.value];
+            let a = null;
+            let b = null;
+            if (operator.arg_count === 2) {
+              b = stack.pop();
+              a = stack.pop();
+            } else {
+              a = stack.pop();
+            }
+            let result = operator.calc(a, b);
+            if (typeof result === 'number' && (isNaN(result) || !isFinite(result))) {
+              result = false;
+              if (allowConsoleLog) {
+                console.error(`rule: ${this.condition}; error: NaN detected;`);
+              }
+            }
+            stack.push({value: result, type: TOKEN_BOOLEAN});
+            break;
+
+          default:
+            // error
+            return false;
+        }
+      }
+
+      if (stack.length === 1) {
+        result = stack[0].value;
+      } else {
+        // error
+        this.error = `rule: ${this.condition}; error: calc failed (${stack.join(' ')})`;
+        if (allowConsoleLog) {
+          console.error(this.error);
+        }
+      }
+    } catch (error) {
+      this.error = `rule: ${this.condition}; error: ${error.message};`;
+      if (allowConsoleLog) {
+        console.error(this.error);
+      }
     }
 
     return result;

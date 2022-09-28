@@ -1,12 +1,15 @@
 'use strict';
+/**
+ * This is a work draft file for local tests
+ */
 // const {StugnaES} = require("./stugna-es");
 const {Rule} = require('./rule');
 
-const calculations = [
-  { rule: "'lazy_dog' = 'lazy' + '_' + 'dog'", result: true, facts: {} },
+const conditions = [
+  "TRUE / * - = "
 ];
-for (let item of calculations) {
-  let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');
-  let result = rule.check(item.facts);
-  console.log(`.${result}.${item.result}.`);
+for (let condition of conditions) {
+  let rule = new Rule(condition, '*', '*', 10, '*');
+  let result = rule.check([]);
+  console.log(` result: ${result}; condition: "${condition}";`);
 }

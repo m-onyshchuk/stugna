@@ -47,7 +47,7 @@ describe('rule validation', () => {
   for (let item of validations) {
     test(`validation: ${item.error}`, () => {
       let rule = new Rule(item.condition, item.factName, item.factValue, item.priority, item.description);
-      expect(rule.getError()).toEqual(item.error);
+      expect(item.error).toEqual(rule.getError());
     });
   }
 })

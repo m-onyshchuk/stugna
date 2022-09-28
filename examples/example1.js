@@ -2,7 +2,8 @@
 /**
  * Example from "Usage example"
  */
-const {StugnaES} = require("./stugna-es");
+// const {StugnaES} = require("stugna-es"); // for standalone run
+const {StugnaES} = require("../stugna-es"); // for local run
 let es = new StugnaES();
 
 let rules = [
