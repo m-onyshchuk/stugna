@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Extended example for "periodic rules"
+ * Extended example for periodic rules
  * Three pass period
  */
 

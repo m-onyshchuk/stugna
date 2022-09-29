@@ -1,9 +1,5 @@
 'use strict';
 const {StugnaES} = require("../stugna-es");
-const {
-  ERROR_STUGNA_PERIODIC_RULES
-} = require('../errors-stugna-es');
-
 const cases = [
   {
     name: "Students in the classroom",
@@ -86,78 +82,24 @@ const cases = [
         }
       }
     }
-  },
-
-  {
-    name: "Periodic rules",
-    input: {
-      rules: [
-        {
-          condition: "season = 'winter'",
-          factName: "season",
-          factValue: "spring",
-          description: "After winter comes spring"
-        },
-        {
-          condition: "season = 'spring'",
-          factName: "season",
-          factValue: "summer",
-          description: "After spring comes summer"
-        },
-        {
-          condition: "season = 'summer'",
-          factName: "season",
-          factValue: "autumn",
-          description: "After summer comes autumn"
-        },
-        {
-          condition: "season = 'autumn'",
-          factName: "season",
-          factValue: "winter",
-          description: "After autumn comes winter"
-        },
-      ],
-      facts: [
-        {
-          name: "season",
-          value: "winter",
-          description: "Initial value of season fact"
-        }
-      ]
-    },
-    expected: {
-      eventLast: {
-        brief: 'rules error',
-        more: ERROR_STUGNA_PERIODIC_RULES
-      }
-    }
   }
 ]
 
-describe('StugnaES tests', () => {
+describe('StugnaES cases', () => {
   for (let item of cases) {
     test(`expert system: ${item.name}`, () => {
+      // setup
       let es = new StugnaES();
       es.rulesImport(item.input.rules);
       es.factsImport(item.input.facts);
 
       // test new facts
-      if (item.expected.facts) {
-        let factsAll = es.factsAllAsMap();
-        for (let factName in item.expected.facts) {
-          let factExpected = item.expected.facts[factName];
-          expect(factExpected.value).toEqual(factsAll[factName]);
-          let predecessors = es.factGetPredecessorsWanted(factName).sort();
-          expect(factExpected.predecessors.sort()).toEqual(predecessors);
-        }
-      }
-
-      // test last event
-      if (item.expected.eventLast) {
-        let events = es.eventsAll();
-        let last = events[events.length - 1];
-        expect(item.expected.eventLast.brief).toEqual(last.brief);
-        expect(item.expected.eventLast.more).toEqual(last.more);
+      let factsAll = es.factsAllAsMap();
+      for (let factName in item.expected.facts) {
+        let factExpected = item.expected.facts[factName];
+        expect(factExpected.value).toEqual(factsAll[factName]);
+        let predecessors = es.factGetPredecessorsWanted(factName).sort();
+        expect(factExpected.predecessors.sort()).toEqual(predecessors);
       }
     });
   }
