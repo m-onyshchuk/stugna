@@ -226,7 +226,9 @@ class StugnaES {
     } else {
       this.#rules.push(rule);
       this.#rules.sort((a, b) => {
-        return b.priority - a.priority
+        if (b.priority > a.priority) return -1;
+        if (a.priority > b.priority) return 1;
+        return 0;
       }); // by priority ASC
       this.eventAdd('rule add', description);
       if (isTrigger) {

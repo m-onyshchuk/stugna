@@ -1,7 +1,7 @@
 'use strict';
 /**
- * Example from "Periodic rules"
- * A simple case - one pass period
+ * Extended example for "periodic rules"
+ * Three pass period
  */
 
 // const {StugnaES} = require("stugna-es"); // for standalone run
@@ -27,24 +27,28 @@ let rules = [
     condition: "season = 'winter'",
     factName: "season",
     factValue: "spring",
+    priority: 40,
     description: "After winter comes spring"
   },
   {
     condition: "season = 'spring'",
     factName: "season",
     factValue: "summer",
+    priority: 30,
     description: "After spring comes summer"
   },
   {
     condition: "season = 'summer'",
     factName: "season",
     factValue: "autumn",
+    priority: 20,
     description: "After summer comes autumn"
   },
   {
     condition: "season = 'autumn'",
     factName: "season",
     factValue: "winter",
+    priority: 10,
     description: "After autumn comes winter"
   },
 ];
