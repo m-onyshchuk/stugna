@@ -185,6 +185,7 @@ class StugnaES {
   }
 
   /**
+   * @returns {object}
    */
   factsAllAsMap() {
     let facts = {};
@@ -256,7 +257,7 @@ class StugnaES {
   }
 
   /**
-   *
+   * @returns {object[]}
    */
   rulesAll() {
     return this.#rules.map(rule => { return {

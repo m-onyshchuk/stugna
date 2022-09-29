@@ -486,11 +486,14 @@ es.eventsClear();
 ```
 
 ## Periodic rules
-Sometimes a situation may arise when the system has several rules that create a periodic change in facts during one pass. 
+New facts in the system appear after passing through the list of rules. The passages stop when no new fact appears.
+Sometimes a situation may arise when the system has several rules that create a periodic change in facts during one pass 
+when through the list of rules.
 In such a situation, an endless cycle of changing facts arises, which can only be interrupted artificially by setting 
-the maximum number of passes through the list of rules. This parameter is called `passCountMax` and is set in the
-[constructor](#constructor). Below is an example of a periodic set of rules and the message that appears in the logs 
-when the number of passes exceeds `passCountMax`.
+the maximum number of passes through the list of rules. 
+This parameter is called `passCountMax` and is set in the [constructor](#constructor). 
+Below is an example of a periodic set of rules and the message that appears in the logs when the number of passes 
+exceeds `passCountMax`.
 ```js
 const {StugnaES} = require("stugna-es");
 let options = {
