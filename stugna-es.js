@@ -40,7 +40,7 @@ class StugnaES {
     this.#toSaveEvents = toSaveEvents;
     this.#passCountMax = passCountMax;
     this.#factsAreOrdered = true;
-  };
+  }
 
   /**
    * @param brief {string}
@@ -285,7 +285,7 @@ class StugnaES {
   order () {
     this.#factsAreOrdered = false;
     let passCount = 1;
-    while (true) {
+    while (passCount <= this.#passCountMax) {
       // one pass - check all rules
       let factsChanged = 0;
       for (let rule of this.#rules) {
@@ -312,16 +312,11 @@ class StugnaES {
       }
         
       this.eventAdd('rules passed', `Rules pass count is ${passCount}`);
-
-      // check pass count
       passCount++;
-      if (passCount > this.#passCountMax) {
-        if (this.#toSaveEvents) {
-          this.eventAdd('rules error', ERROR_STUGNA_PERIODIC_RULES);
-        }
-        this.#factsAreOrdered = false;
-        break;
-      }
+    }
+
+    if (!this.#factsAreOrdered && this.#toSaveEvents) {
+      this.eventAdd('rules error', ERROR_STUGNA_PERIODIC_RULES);
     }
   }
 }

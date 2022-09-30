@@ -10,8 +10,8 @@ const {
 } = require('./errors-rule');
 
 const OPERATORS = {
-  '(' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
-  ')' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: function (a, b){ } },
+  '(' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: null },
+  ')' :   {priority: 4, arg_count: 2, left_associativity: 1, calc: null },
 
   '+' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value + b.value } },
   '-' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value - b.value } },
@@ -26,7 +26,7 @@ const OPERATORS = {
 
   'AND' : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value && b.value } },
   'OR'  : {priority: 1, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value || b.value } },
-  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a, b){ return !a.value } }
+  'NOT' : {priority: 1, arg_count: 1, left_associativity: 0, calc: function (a){ return !a.value } }
 }
 const regexpWhiteSpaces = new RegExp('\\s+', 'g');
 
@@ -315,15 +315,15 @@ class Rule {
           output.push(token);
           break;
 
-        case TOKEN_OPERATOR:
+        case TOKEN_OPERATOR: {
           let operatorCurrent = token;
           while (stack.length) {
-            let operatorTop = stack[stack.length-1];
+            let operatorTop = stack[stack.length - 1];
             if (
               operatorTop.type === TOKEN_OPERATOR && (
-                ( operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <= operatorPriority(operatorTop.value))
+                (operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <= operatorPriority(operatorTop.value))
                 ||
-                (!operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <  operatorPriority(operatorTop.value))
+                (!operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) < operatorPriority(operatorTop.value))
               )
             ) {
               output.push(operatorTop);
@@ -333,17 +333,18 @@ class Rule {
             }
           }
           stack.push(operatorCurrent);
-          break;
+        }
+        break;
 
-        case TOKEN_PARENTHESIS:
+        case TOKEN_PARENTHESIS: {
           if (token.value === '(') {
             stack.push(token);
           }
           if (token.value === ')') {
             let pe = false;
             while (stack.length) {
-              let operatorTop = stack[stack.length-1];
-              if(operatorTop.value === '(') {
+              let operatorTop = stack[stack.length - 1];
+              if (operatorTop.value === '(') {
                 pe = true;
                 break;
               } else {
@@ -357,7 +358,8 @@ class Rule {
             }
             stack.pop();
           }
-          break;
+        }
+        break;
       }
     }
 
@@ -438,31 +440,33 @@ class Rule {
             stack.push(token);
             break;
 
-          case TOKEN_VARIABLE:
-            let name = token.value;
-            let value = facts[name].value;
-            token.value = value;
-            stack.push(token);
+          case TOKEN_VARIABLE: {
+              let name = token.value;
+              let value = facts[name].value;
+              token.value = value;
+              stack.push(token);
+            }
             break;
 
-          case TOKEN_OPERATOR:
-            let operator = OPERATORS[token.value];
-            let a = null;
-            let b = null;
-            if (operator.arg_count === 2) {
-              b = stack.pop();
-              a = stack.pop();
-            } else {
-              a = stack.pop();
-            }
-            let result = operator.calc(a, b);
-            if (typeof result === 'number' && (isNaN(result) || !isFinite(result))) {
-              result = false;
-              if (allowConsoleLog) {
-                console.error(`rule: ${this.condition}; error: NaN detected;`);
+          case TOKEN_OPERATOR: {
+              let operator = OPERATORS[token.value];
+              let a = null;
+              let b = null;
+              if (operator.arg_count === 2) {
+                b = stack.pop();
+                a = stack.pop();
+              } else {
+                a = stack.pop();
               }
+              let result = operator.calc ? operator.calc(a, b) : false;
+              if (typeof result === 'number' && (isNaN(result) || !isFinite(result))) {
+                result = false;
+                if (allowConsoleLog) {
+                  console.error(`rule: ${this.condition}; error: NaN detected;`);
+                }
+              }
+              stack.push({value: result, type: TOKEN_BOOLEAN});
             }
-            stack.push({value: result, type: TOKEN_BOOLEAN});
             break;
 
           default:

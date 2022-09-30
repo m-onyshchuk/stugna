@@ -9,7 +9,7 @@ const {StugnaES} = require("../stugna-es"); // for local run
 
 let options = {
   toSaveEvents: true,
-  passCountMax: 10
+  passCountMax: 2
 };
 let es = new StugnaES(options);
 
