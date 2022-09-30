@@ -1,8 +1,0 @@
-.idea/
-.vscode/
-node_modules/
-*~.*
-
-__test__/
-examples/
-draft.js
