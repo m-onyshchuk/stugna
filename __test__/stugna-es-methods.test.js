@@ -1,8 +1,8 @@
 'use strict';
 const {StugnaES} = require("../stugna-es");
 
-describe('StugnaES API', () => {
-  test(`API public methods`, () => {
+describe('StugnaES methods', () => {
+  test(`public methods`, () => {
     let es = new StugnaES();
     expect(es.ruleAdd).toBeDefined();
     expect(es.rulesImport).toBeDefined();

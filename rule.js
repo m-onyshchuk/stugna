@@ -388,7 +388,10 @@ class Rule {
     if (this.calc) {
       for (let token of this.calc) {
         if (token.type === TOKEN_VARIABLE) {
-          this.variables.push(token.value);
+          let exist = this.variables.includes(token.value);
+          if (!exist) {
+            this.variables.push(token.value);
+          }
         }
       }
     }

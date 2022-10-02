@@ -321,4 +321,35 @@ class StugnaES {
   }
 }
 
-module.exports = {StugnaES}
+/**
+ *
+ * @param condition {string}
+ * @param facts {[{name: string, value: number|string}]}
+ * @returns {[boolean, null|string]}
+ */
+function ruleApply(condition, facts) {
+  let result = false;
+  let error = null;
+
+  // facts
+  let factsMap = {};
+  for (let fact of facts) {
+    if (!fact.name) continue;
+    factsMap[fact.name] = {value:fact.value};
+  }
+
+  // rule
+  let rule = new Rule(condition, 'fact-name', 'fact-value', 10, 'description');
+  if (rule.error) {
+    error = rule.error;
+  } else {
+    result = rule.check(factsMap);
+    if (rule.error) {
+      error = rule.error;
+    }
+  }
+
+  return [result, error];
+}
+
+module.exports = {StugnaES, ruleApply}

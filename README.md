@@ -3,7 +3,7 @@ Stugna is a simple engine for expert systems building. Rules and facts can be de
 knowledge base can be serialized into/from one JSON file.
 
 - [Usage example](#usage-example)
-- [API details](#api-details)
+- [StugnaES methods](#stugnaes-methods)
   - [constructor](#constructor)
   - [ruleAdd](#ruleadd)
   - [rulesImport](#rulesimport)
@@ -22,6 +22,7 @@ knowledge base can be serialized into/from one JSON file.
   - [eventsAll](#eventsall)
   - [eventsClear](#eventsclear)
 - [Periodic rules](#periodic-rules)
+- [ruleApply](#ruleapply)
 
 ## Usage example
 To illustrate how a small expert system can function with rules and facts, we will build one in this example. 
@@ -104,7 +105,7 @@ Object `factWanted` has the following fields:
 * history - fact history or changes reason list
 * changed - whether the fact was changed by the rules 
 
-## API details 
+## StugnaES methods
 The methods of the StugnaES class are described below. 
 
 ### constructor
@@ -588,4 +589,30 @@ false
   }
 ]
 */
+```
+
+## ruleApply
+Standalone function to check one rule with facts array. No need to create StugnaES instance. 
+
+First example:
+```js
+const {ruleApply} = require("./stugna-es");
+const condition = "animal = 'cat' OR animal = 'dog'";
+const facts = [{name:"animal", value:"cat"}];
+let [result, error] = ruleApply(condition, facts);
+console.log('result=' + result);
+console.log('error=' + error);
+//result=true
+//error=null
+```
+Second example:
+```js
+const {ruleApply} = require("./stugna-es");
+const condition = "animal = 'monkey')";
+const facts = [{name:"animal", value:"cat"}];
+let [result, error] = ruleApply(condition, facts);
+console.log('result=' + result);
+console.log('error=' + error);
+//result=false
+//error=Parentheses mismatched (1)
 ```
