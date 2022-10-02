@@ -600,10 +600,10 @@ const {ruleApply} = require("./stugna-es");
 const condition = "animal = 'cat' OR animal = 'dog'";
 const facts = [{name:"animal", value:"cat"}];
 let [result, error] = ruleApply(condition, facts);
-console.log('result=' + result);
-console.log('error=' + error);
-//result=true
-//error=null
+console.log(result);
+console.log(error);
+// true
+// null
 ```
 Second example:
 ```js
@@ -611,8 +611,8 @@ const {ruleApply} = require("./stugna-es");
 const condition = "animal = 'monkey')";
 const facts = [{name:"animal", value:"cat"}];
 let [result, error] = ruleApply(condition, facts);
-console.log('result=' + result);
-console.log('error=' + error);
-//result=false
-//error=Parentheses mismatched (1)
+console.log(result);
+console.log(error);
+//false
+//Parentheses mismatched (1)
 ```

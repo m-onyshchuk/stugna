@@ -30,7 +30,7 @@ const {ruleApply} = require("./stugna-es");
 const condition = "animal = 'monkey')";
 const facts = [{name:"animal", value:"cat"}];
 let [result, error] = ruleApply(condition, facts);
-console.log('result=' + result);
-console.log('error=' + error);
-//result=true
-//error=null
+console.log(result);
+console.log(error);
+//false
+//Parentheses mismatched (1)
