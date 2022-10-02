@@ -613,6 +613,6 @@ const facts = [{name:"animal", value:"cat"}];
 let [result, error] = ruleApply(condition, facts);
 console.log(result);
 console.log(error);
-//false
-//Parentheses mismatched (1)
+// false
+// Parentheses mismatched (1)
 ```
