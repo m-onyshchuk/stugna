@@ -8,8 +8,7 @@
   },
   "scripts": {
     "test": "jest",
-    "coveralls": "jest --coverage",
-    "coveralls-old": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "coverage": "jest --coverage",
     "lint": "npx eslint *.js"
   },
   "repository": {
@@ -37,7 +36,6 @@
   "homepage": "https://github.com/m-onyshchuk/stugna#readme",
   "devDependencies": {
     "@types/jest": "^29.0.3",
-    "coveralls": "^3.1.1",
     "eslint": "^8.24.0",
     "jest": "^29.0.3"
   },
