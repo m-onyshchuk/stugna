@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/m-onyshchuk/stugna/badge.svg?branch=main)](https://coveralls.io/github/m-onyshchuk/stugna?branch=main)
+
 # Stugna
 Stugna is a simple engine for expert systems building. Rules and facts can be described in JSON format, so all your 
 knowledge base can be serialized into/from one JSON file.
