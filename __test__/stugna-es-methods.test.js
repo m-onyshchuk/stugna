@@ -38,6 +38,14 @@ describe('StugnaES methods', () => {
     expect(es._passCountMax).toEqual(passCountMax);
   });
 
+  test(`constructor wrong`, () => {
+    const toSaveEvents = true;
+    const passCountMax = 16;
+    let es = new StugnaES({});
+    expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._passCountMax).toEqual(passCountMax);
+  });
+
   test(`method factIsKnown`, () => {
     let es = new StugnaES();
     let fact = {
@@ -141,6 +149,58 @@ describe('StugnaES methods', () => {
     es.factsImport(facts);
     let events = es.eventsAll();
     expect(events[1].brief).toEqual('fact skip');
+  });
+
+  test(`method factsImport / trigger off`, () => {
+    let es = new StugnaES();
+    let rules = [
+      {
+        condition: "cats > 2",
+        factName: "math",
+        factValue: "power"
+      }
+    ];
+    es.rulesImport(rules, false);
+    let facts = [
+      {
+        name: "cats",
+        value: 3,
+        description: "There are three cats"
+      }
+    ];
+    es.factsImport(facts, false);
+    let events = es.eventsAll();
+    expect(events.length).toEqual(2);
+  });
+
+  test(`method factsImport / trigger off / no logs`, () => {
+    let es = new StugnaES({toSaveEvents: false});
+    let rules = [
+      {
+        condition: "cats > 2",
+        factName: "math",
+        factValue: "power"
+      }
+    ];
+    es.rulesImport(rules, false);
+    let facts = [
+      {
+        name: "cats",
+        value: 3,
+        description: "There are three cats"
+      }
+    ];
+    es.factsImport(facts, false);
+    let events = es.eventsAll();
+    expect(events.length).toEqual(0);
+  });
+
+  test(`method rulesImport / empty rules`, () => {
+    let es = new StugnaES();
+    let rulesInput = [{},{},{},{},{},{},{},{},{},{},{},{},{}];
+    es.rulesImport(rulesInput);
+    let rulesOutput = es.rulesAll();
+    expect(rulesOutput.length).toEqual(0);
   });
 
   test(`method ruleAdd / wrong condition`, () => {
