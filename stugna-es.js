@@ -86,7 +86,7 @@ class StugnaES {
     this._facts[name] = factNew;
     this.eventAdd('fact add', description);
     if (isTrigger) {
-      this.order();
+      this._order();
     }
   }
 
@@ -168,7 +168,7 @@ class StugnaES {
       }
     }
     if (isTrigger) {
-      this.order();
+      this._order();
     }
   }
 
@@ -232,7 +232,7 @@ class StugnaES {
       }); // by priority ASC
       this.eventAdd('rule add', description);
       if (isTrigger) {
-        this.order();
+        this._order();
       }
     }
   }
@@ -254,7 +254,7 @@ class StugnaES {
       }
     }
     if (isTrigger) {
-      this.order();
+      this._order();
     }
   }
 
@@ -282,7 +282,7 @@ class StugnaES {
   /**
    * Regularize all rules and facts
    */
-  order () {
+  _order () {
     this._factsAreOrdered = false;
     let passCount = 1;
     while (passCount <= this._passCountMax) {

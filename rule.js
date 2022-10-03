@@ -33,7 +33,7 @@ const regexpWhiteSpaces = new RegExp('\\s+', 'g');
 /**
  * @param name {string}
  */
-function operatorHasLeftAssociativity(name) {
+function _operatorHasLeftAssociativity(name) {
   let operator = OPERATORS[name];
   if (!operator) {
     return null;
@@ -44,7 +44,7 @@ function operatorHasLeftAssociativity(name) {
 /**
  * @param name {string}
  */
-function operatorPriority(name) {
+function _operatorPriority(name) {
   let operator = OPERATORS[name];
   if (!operator) {
     return null;
@@ -65,7 +65,7 @@ const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;
 const CHAR_CODE_MINUS = 45;
 
-function hasMinus(str) {
+function _hasMinus(str) {
   if (!str) {
     return false;
   }
@@ -73,7 +73,7 @@ function hasMinus(str) {
   return code === CHAR_CODE_MINUS;
 }
 
-function mayBeNumber(str) {
+function _mayBeNumber(str) {
   if (!str) {
     return false;
   }
@@ -81,7 +81,7 @@ function mayBeNumber(str) {
   return code >= CHAR_CODE_0 && code <= CHAR_CODE_9;
 }
 
-function mayBeFloat(str) {
+function _mayBeFloat(str) {
   if (!str) {
     return false;
   }
@@ -118,16 +118,20 @@ class Rule {
     this.error = null;               // rule`s error
     this.variables = [];             // variables list from rule
 
-    this.validate();
-    this.tokenize(condition);
-    this.parse();
-    this.collectVariables();
+    this._validate();
+    this._tokenize(condition);
+    this._parse();
+    this._collectVariables();
   }
+
+
+
+
 
   /**
    * Validate rule inputs
    */
-  validate () {
+  _validate () {
     if (!this.condition) {
       this.error = ERROR_RULE_CONDITION_EMPTY;
       return;
@@ -188,7 +192,7 @@ class Rule {
    * Lexical analysis
    * @param raw {string}
    */
-  tokenize(raw) {
+  _tokenize(raw) {
     if (this.error) {
       return;
     }
@@ -248,12 +252,12 @@ class Rule {
             }
           } else {
             let sign = 1;
-            if (hasMinus(part) && part.length > 1) {
+            if (_hasMinus(part) && part.length > 1) {
               part = part.substring(1);
               sign = -1;
             }
-            if (mayBeNumber(part)) {
-              if (mayBeFloat(part)) {
+            if (_mayBeNumber(part)) {
+              if (_mayBeFloat(part)) {
                 part = sign*parseFloat(part);
               } else {
                 part = sign*parseInt(part);
@@ -299,7 +303,7 @@ class Rule {
    * Shunting yard algorithm - converting infix notation to reverse polish notation
    * https://en.wikipedia.org/wiki/Shunting_yard_algorithm
    */
-  parse() {
+  _parse() {
     if (this.error) {
       return;
     }
@@ -321,9 +325,9 @@ class Rule {
             let operatorTop = stack[stack.length - 1];
             if (
               operatorTop.type === TOKEN_OPERATOR && (
-                (operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) <= operatorPriority(operatorTop.value))
+                (_operatorHasLeftAssociativity(operatorCurrent.value) && _operatorPriority(operatorCurrent.value) <= _operatorPriority(operatorTop.value))
                 ||
-                (!operatorHasLeftAssociativity(operatorCurrent.value) && operatorPriority(operatorCurrent.value) < operatorPriority(operatorTop.value))
+                (!_operatorHasLeftAssociativity(operatorCurrent.value) && _operatorPriority(operatorCurrent.value) < _operatorPriority(operatorTop.value))
               )
             ) {
               output.push(operatorTop);
@@ -379,7 +383,7 @@ class Rule {
   /**
    * Collect variable names from parsed reverse polish notation
    */
-  collectVariables() {
+  _collectVariables() {
     if (this.error) {
       return;
     }
