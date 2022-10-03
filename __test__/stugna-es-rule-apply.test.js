@@ -7,7 +7,7 @@ const {
 describe('Function ruleApply', () => {
   test(`case ok`, () => {
     const condition = "animal = 'cat' OR animal = 'dog'";
-    const facts = [{name:"animal", value:"cat"}];
+    const facts = [{name:"animal", value:"cat"}, {hello:"world"}];
     let [result, error] = ruleApply(condition, facts);
     expect(result).toEqual(true);
     expect(error).toEqual(null);
