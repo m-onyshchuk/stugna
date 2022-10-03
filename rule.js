@@ -41,7 +41,6 @@ const TOKEN_PARENTHESIS = PROD ? 6 : 'PARENTHESIS';
 
 const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;
-const CHAR_CODE_MINUS = 45;
 
 /**
  *
