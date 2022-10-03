@@ -41,14 +41,119 @@ describe('StugnaES methods', () => {
   test(`method factIsKnown`, () => {
     let es = new StugnaES();
     let fact = {
-      name: "factFirst",
-      value: 1
+      name: "factName",
+      value: "factValue"
     };
     es.factAdd(fact);
     let known = es.factIsKnown(fact.name);
     let unknown = es.factIsKnown('UNKNOWN_FACT_NAME');
     expect(known).toEqual(true);
     expect(unknown).toEqual(false);
+  });
+
+  test(`method factGet`, () => {
+    let es = new StugnaES();
+    let factInput = {
+      name: "factName",
+      value: "factValue",
+      description: "factDescription",
+    };
+    es.factAdd(factInput);
+    let factKnown = es.factGet(factInput.name);
+    let factUnknown = es.factGet('UNKNOWN_FACT_NAME');
+    expect(factKnown).not.toEqual(null);
+    expect(factKnown.name).toEqual(factInput.name);
+    expect(factKnown.value).toEqual(factInput.value);
+    expect(factKnown.history).not.toEqual(null);
+    expect(Array.isArray(factKnown.history)).toEqual(true);
+    expect(factKnown.history[0]).toEqual(expect.stringContaining(factInput.description));
+    expect(factUnknown).toEqual(null);
+  });
+
+  test(`method factGetPredecessorsWanted / deep case`, () => {
+    let es = new StugnaES();
+    let rulesIn = [
+      {
+        condition: "Jack = 'built'",
+        factName: "malt",
+        factValue: "lay",
+      },
+      {
+        condition: "malt = 'lay'",
+        factName: "rat",
+        factValue: "ate",
+      },
+      {
+        condition: "rat = 'ate'",
+        factName: "cat",
+        factValue: "killed",
+      },
+      {
+        condition: "cat = 'killed'",
+        factName: "dog",
+        factValue: "worried",
+      },
+      {
+        condition: "dog = 'worried'",
+        factName: "cow",
+        factValue: "crumpled",
+      }
+    ];
+    es.rulesImport(rulesIn);
+    let out = es.factGetPredecessorsWanted("cow");
+    let expected = ['dog', 'cat', 'rat', 'malt', 'Jack'];
+    expect(out).toEqual( expect.arrayContaining(expected));
+  });
+
+  test(`method factGetPredecessorsUnknown`, () => {
+    let es = new StugnaES();
+    let rules = [
+      {
+        condition: "wheels = 4 AND motor = 'present'",
+        factName: "transport",
+        factValue: "car"
+      }
+    ];
+    es.rulesImport(rules);
+    let facts = [
+      {
+        name: "wheels",
+        value: 4,
+        description: "This transport has 4 wheels"
+      }
+    ];
+    es.factsImport(facts);
+    let factsUnknown = es.factGetPredecessorsUnknown("transport");
+    let expected = ['motor'];
+    expect(factsUnknown).toEqual( expect.arrayContaining(expected));
+  });
+
+  test(`method factsImport / empty case`, () => {
+    let es = new StugnaES();
+    let facts = [
+      {
+        name: "wheels",
+        value: 4,
+        description: "This transport has 4 wheels"
+      },
+      {}
+    ];
+    es.factsImport(facts);
+    let events = es.eventsAll();
+    expect(events[1].brief).toEqual('fact skip');
+  });
+
+  test(`method ruleAdd / wrong condition`, () => {
+    let es = new StugnaES();
+    es.ruleAdd(      {
+      condition: "season = winter'",
+      factName: "season",
+      factValue: "spring",
+      priority: 20,
+      description: "second to pass"
+    });
+    let events = es.eventsAll();
+    expect(events[0].brief).toEqual('rule error');
   });
 
   test(`method rulesClear`, () => {

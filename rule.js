@@ -488,8 +488,9 @@ class Rule {
         }
       }
     } catch (error) {
-      this.error = `rule: ${this.condition}; error: ${error.message};`;
+      this.error = `rule: ${this.condition}; error in condition`;
       if (allowConsoleLog) {
+        this.error = `rule: ${this.condition}; error: ${error.message};`;
         console.error(this.error);
       }
     }
