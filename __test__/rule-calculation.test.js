@@ -19,7 +19,7 @@ const calculations = [
   { rule: "-2 > -8", result: true, facts: {} },
   { rule: "4 * 2 = 8", result: true, facts: {} },
   { rule: "16 / 2 = 8", result: true, facts: {} },
-  { rule: "16 / 0 = 0", result: true, facts: {} },
+  { rule: "16 / 0 = 0", result: false, facts: {} },
   { rule: "2 > 1", result: true, facts: {} },
   { rule: "2.0 > 1", result: true, facts: {} },
   { rule: "2 < 3", result: true, facts: {} },
@@ -52,9 +52,12 @@ const calculations = [
   { rule: "(animal = 'cat' OR animal = 'dog') AND (food = 'milk' OR food = 'meat')", result: false, facts: {animal:{value:'pig'}, food:{value:'milk'}} },
   { rule: "(animal = 'cat' OR animal = 'dog') AND (food = 'milk' OR food = 'meat')", result: false, facts: {animal:{value:'cat'}, food:{value:'cake'}} },
   { rule: "(animal = 'cat' OR animal = 'dog') AND NOT (food = 'milk' OR food = 'meat')", result: true, facts: {animal:{value:'cat'}, food:{value:'cake'}} },
+
+  // wrong cases
+  { rule: "12 12", result: false, facts: {} },
 ];
 
-describe('rule calculation', () => {
+describe('Rule calculation', () => {
   for (let item of calculations) {
     test(`condition: ${item.rule}`, () => {
       let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');

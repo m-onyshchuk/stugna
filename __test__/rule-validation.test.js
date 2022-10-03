@@ -43,7 +43,7 @@ const validations = [
   }
 ]
 
-describe('rule validation', () => {
+describe('Rule validation', () => {
   for (let item of validations) {
     test(`validation: ${item.error}`, () => {
       let rule = new Rule(item.condition, item.factName, item.factValue, item.priority, item.description);

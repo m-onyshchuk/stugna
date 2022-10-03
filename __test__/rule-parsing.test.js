@@ -48,7 +48,7 @@ const parsing = [
   },
 ];
 
-describe('rule parsing', () => {
+describe('Rule parsing', () => {
     for (let item of parsing) {
       test(`condition: ${item.rule}`, () => {
         let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');

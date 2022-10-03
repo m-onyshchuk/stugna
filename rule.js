@@ -16,7 +16,7 @@ const OPERATORS = {
   '+' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value + b.value } },
   '-' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value - b.value } },
   '*' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value * b.value } },
-  '/' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return b.value !== 0 ? a.value / b.value : 0 } },
+  '/' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value / b.value } },
 
   '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value < b.value } },
   '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value > b.value } },
@@ -30,28 +30,6 @@ const OPERATORS = {
 }
 const regexpWhiteSpaces = new RegExp('\\s+', 'g');
 
-/**
- * @param name {string}
- */
-function _operatorHasLeftAssociativity(name) {
-  let operator = OPERATORS[name];
-  if (!operator) {
-    return null;
-  }
-  return operator.left_associativity;
-}
-
-/**
- * @param name {string}
- */
-function _operatorPriority(name) {
-  let operator = OPERATORS[name];
-  if (!operator) {
-    return null;
-  }
-  return operator.priority;
-}
-
 const PROD = process.env.NODE_ENV !== 'develop';
 const TOKEN_UNKNOWN     = PROD ? 0 : 'UNKNOWN';
 const TOKEN_BOOLEAN     = PROD ? 1 : 'BOOLEAN';
@@ -64,29 +42,6 @@ const TOKEN_PARENTHESIS = PROD ? 6 : 'PARENTHESIS';
 const CHAR_CODE_0 = 48;
 const CHAR_CODE_9 = 57;
 const CHAR_CODE_MINUS = 45;
-
-function _hasMinus(str) {
-  if (!str) {
-    return false;
-  }
-  let code = str.charCodeAt(0);
-  return code === CHAR_CODE_MINUS;
-}
-
-function _mayBeNumber(str) {
-  if (!str) {
-    return false;
-  }
-  let code = str.charCodeAt(0);
-  return code >= CHAR_CODE_0 && code <= CHAR_CODE_9;
-}
-
-function _mayBeFloat(str) {
-  if (!str) {
-    return false;
-  }
-  return str.indexOf('.') !== -1;
-}
 
 /**
  *
@@ -124,9 +79,42 @@ class Rule {
     this._collectVariables();
   }
 
+  /**
+   * @param name {string}
+   */
+  _operatorHasLeftAssociativity(name) {
+    let operator = OPERATORS[name];
+    if (!operator) {
+      return null;
+    }
+    return operator.left_associativity;
+  }
 
+  /**
+   * @param name {string}
+   */
+  _operatorPriority(name) {
+    let operator = OPERATORS[name];
+    if (!operator) {
+      return null;
+    }
+    return operator.priority;
+  }
 
+  _mayBeNumber(str) {
+    if (!str) {
+      return false;
+    }
+    let code = str.charCodeAt(0);
+    return code >= CHAR_CODE_0 && code <= CHAR_CODE_9;
+  }
 
+  _mayBeFloat(str) {
+    if (!str) {
+      return false;
+    }
+    return str.indexOf('.') !== -1;
+  }
 
   /**
    * Validate rule inputs
@@ -251,16 +239,11 @@ class Rule {
               type = TOKEN_OPERATOR;
             }
           } else {
-            let sign = 1;
-            if (_hasMinus(part) && part.length > 1) {
-              part = part.substring(1);
-              sign = -1;
-            }
-            if (_mayBeNumber(part)) {
-              if (_mayBeFloat(part)) {
-                part = sign*parseFloat(part);
+            if (this._mayBeNumber(part)) {
+              if (this._mayBeFloat(part)) {
+                part = parseFloat(part);
               } else {
-                part = sign*parseInt(part);
+                part = parseInt(part);
               }
               type = TOKEN_NUMBER;
             } else {
@@ -325,9 +308,9 @@ class Rule {
             let operatorTop = stack[stack.length - 1];
             if (
               operatorTop.type === TOKEN_OPERATOR && (
-                (_operatorHasLeftAssociativity(operatorCurrent.value) && _operatorPriority(operatorCurrent.value) <= _operatorPriority(operatorTop.value))
+                (this._operatorHasLeftAssociativity(operatorCurrent.value) && this._operatorPriority(operatorCurrent.value) <= this._operatorPriority(operatorTop.value))
                 ||
-                (!_operatorHasLeftAssociativity(operatorCurrent.value) && _operatorPriority(operatorCurrent.value) < _operatorPriority(operatorTop.value))
+                (!this._operatorHasLeftAssociativity(operatorCurrent.value) && this._operatorPriority(operatorCurrent.value) < this._operatorPriority(operatorTop.value))
               )
             ) {
               output.push(operatorTop);
@@ -427,7 +410,7 @@ class Rule {
    */
   check (facts) {
     let result = false;
-    let allowConsoleLog = !PROD;
+    // let allowConsoleLog = !PROD;
     try {
       // 1) check wanted variables
       for (let variable of this.variables) {
@@ -468,17 +451,13 @@ class Rule {
               let result = operator.calc ? operator.calc(a, b) : false;
               if (typeof result === 'number' && (isNaN(result) || !isFinite(result))) {
                 result = false;
-                if (allowConsoleLog) {
-                  console.error(`rule: ${this.condition}; error: NaN detected;`);
-                }
+                // if (allowConsoleLog) {
+                //   console.error(`rule: ${this.condition}; error: NaN detected;`);
+                // }
               }
               stack.push({value: result, type: TOKEN_BOOLEAN});
             }
             break;
-
-          default:
-            // error
-            return false;
         }
       }
 
@@ -486,17 +465,17 @@ class Rule {
         result = stack[0].value;
       } else {
         // error
-        this.error = `rule: ${this.condition}; error: calc failed (${stack.join(' ')})`;
-        if (allowConsoleLog) {
-          console.error(this.error);
-        }
+        this.error = `rule: ${this.condition}; error: calc failed (${JSON.stringify(stack)})`;
+        // if (allowConsoleLog) {
+        //   console.error(this.error);
+        // }
       }
     } catch (error) {
       this.error = `rule: ${this.condition}; error in condition`;
-      if (allowConsoleLog) {
-        this.error = `rule: ${this.condition}; error: ${error.message};`;
-        console.error(this.error);
-      }
+      // if (allowConsoleLog) {
+      //   this.error = `rule: ${this.condition}; error: ${error.message};`;
+      //   console.error(this.error);
+      // }
     }
 
     return result;

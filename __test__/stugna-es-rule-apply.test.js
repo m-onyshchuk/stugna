@@ -4,7 +4,7 @@ const {
   ERROR_RULE_PARENTHESES_1
 } = require('../errors-rule');
 
-describe('ruleApply', () => {
+describe('Function ruleApply', () => {
   test(`case ok`, () => {
     const condition = "animal = 'cat' OR animal = 'dog'";
     const facts = [{name:"animal", value:"cat"}];
