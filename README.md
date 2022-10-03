@@ -1,4 +1,4 @@
-[![Workflow Status](https://github.com/m-onyshchuk/stugna/actions/workflows/node.js-builds.yml/badge.svg)](https://github.com/m-onyshchuk/stugna/actions)
+[![Workflow Status](https://github.com/m-onyshchuk/stugna/actions/workflows/node.js-tests.yml/badge.svg)](https://github.com/m-onyshchuk/stugna/actions)
 [![Coverage Status](https://coveralls.io/repos/github/m-onyshchuk/stugna/badge.svg?branch=main)](https://coveralls.io/github/m-onyshchuk/stugna?branch=main)
 
 # Stugna
