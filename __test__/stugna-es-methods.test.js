@@ -22,6 +22,73 @@ describe('StugnaES methods', () => {
     expect(es.eventsClear).toBeDefined();
   });
 
+  test(`constructor defaults`, () => {
+    const toSaveEvents = true;
+    const passCountMax = 16;
+    let es = new StugnaES();
+    expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._passCountMax).toEqual(passCountMax);
+  });
+
+  test(`constructor custom`, () => {
+    const toSaveEvents = false;
+    const passCountMax = 42;
+    let es = new StugnaES({toSaveEvents, passCountMax});
+    expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._passCountMax).toEqual(passCountMax);
+  });
+
+  test(`method factIsKnown`, () => {
+    let es = new StugnaES();
+    let fact = {
+      name: "factFirst",
+      value: 1
+    };
+    es.factAdd(fact);
+    let known = es.factIsKnown(fact.name);
+    let unknown = es.factIsKnown('UNKNOWN_FACT_NAME');
+    expect(known).toEqual(true);
+    expect(unknown).toEqual(false);
+  });
+
+  test(`method rulesClear`, () => {
+    let es = new StugnaES();
+    es.ruleAdd(      {
+      condition: "TRUE",
+      factName: "fact",
+      factValue: "value",
+      priority: 10,
+      description: "rule description"
+    });
+    es.rulesClear();
+    let rules = es.rulesAll();
+    expect(rules.length).toEqual(0);
+  });
+
+  test(`method factsClear`, () => {
+    let es = new StugnaES();
+    es.factAdd(      {
+      name: "fact name",
+      value: "fact value",
+      description: "fact description"
+    });
+    es.factsClear();
+    let facts = es.factsAllAsArray();
+    expect(facts.length).toEqual(0);
+  });
+
+  test(`method eventsClear`, () => {
+    let es = new StugnaES();
+    es.factAdd(      {
+      name: "fact name",
+      value: "fact value",
+      description: "fact description"
+    });
+    es.eventsClear();
+    let events = es.eventsAll();
+    expect(events.length).toEqual(0);
+  });
+
   test(`rule priority`, () => {
     let es = new StugnaES();
     let rulesIn = [
@@ -70,43 +137,4 @@ describe('StugnaES methods', () => {
     let ordered = es.factsAreOrdered();
     expect(ordered).toEqual(false);
   });
-
-  test(`method rulesClear`, () => {
-    let es = new StugnaES();
-    es.ruleAdd(      {
-      condition: "TRUE",
-      factName: "fact",
-      factValue: "value",
-      priority: 10,
-      description: "rule description"
-    });
-    es.rulesClear();
-    let rules = es.rulesAll();
-    expect(rules.length).toEqual(0);
-  });
-
-  test(`method factsClear`, () => {
-    let es = new StugnaES();
-    es.factAdd(      {
-      name: "fact name",
-      value: "fact value",
-      description: "fact description"
-    });
-    es.factsClear();
-    let facts = es.factsAllAsArray();
-    expect(facts.length).toEqual(0);
-  });
-
-  test(`method eventsClear`, () => {
-    let es = new StugnaES();
-    es.factAdd(      {
-      name: "fact name",
-      value: "fact value",
-      description: "fact description"
-    });
-    es.eventsClear();
-    let events = es.eventsAll();
-    expect(events.length).toEqual(0);
-  });
-
 })

@@ -12,13 +12,13 @@ const regexpWhiteSpaces = new RegExp('\\s+', 'g');
  *
  */
 class StugnaES {
-  // private fields
-  #rules;
-  #facts;
-  #events;
-  #toSaveEvents;
-  #passCountMax;
-  #factsAreOrdered;
+  // fields
+  _rules;
+  _facts;
+  _events;
+  _toSaveEvents;
+  _passCountMax;
+  _factsAreOrdered;
 
   /**
    * @param options {null|Object}
@@ -34,12 +34,12 @@ class StugnaES {
         passCountMax = options.passCountMax;
       }
     }
-    this.#rules = [];
-    this.#facts = {};
-    this.#events = [];
-    this.#toSaveEvents = toSaveEvents;
-    this.#passCountMax = passCountMax;
-    this.#factsAreOrdered = true;
+    this._rules = [];
+    this._facts = {};
+    this._events = [];
+    this._toSaveEvents = toSaveEvents;
+    this._passCountMax = passCountMax;
+    this._factsAreOrdered = true;
   }
 
   /**
@@ -47,8 +47,8 @@ class StugnaES {
    * @param more {string}
    */
   eventAdd(brief, more) {
-    if (this.#toSaveEvents) {
-      this.#events.push({brief, more});
+    if (this._toSaveEvents) {
+      this._events.push({brief, more});
     }
   }
 
@@ -56,19 +56,19 @@ class StugnaES {
    *
    */
   eventsAll() {
-    return this.#events.map(event => event);
+    return this._events.map(event => event);
   }
 
   /**
    *
    */
   eventsClear() {
-    this.#events = [];
+    this._events = [];
   }
 
   /**
    * @param name {string}
-   * @param value {boolean|number|string}
+   * @param value {string|number|boolean}
    * @param description {string}
    * @param toRegularize {boolean}
    */
@@ -78,12 +78,12 @@ class StugnaES {
       return;
     }
     let factNew = new Fact(name, value, `init: ${description}`);
-    let factOld = this.#facts[name];
+    let factOld = this._facts[name];
     if (factOld) {
       factOld.history.push(`init: ${description}`);
       factNew.history = factOld.history;
     }
-    this.#facts[name] = factNew;
+    this._facts[name] = factNew;
     this.eventAdd('fact add', description);
     if (isTrigger) {
       this.order();
@@ -95,7 +95,7 @@ class StugnaES {
    * @returns {boolean}
    */
   factIsKnown(name) {
-    return (this.#facts[name] !== undefined)
+    return (this._facts[name] !== undefined)
   }
 
   /**
@@ -103,12 +103,12 @@ class StugnaES {
    * @returns {{name, value: *, history: (*|string[]|[string]|History), changed}|null}
    */
   factGet(name) {
-    if (!this.#facts[name]) {
+    if (!this._facts[name]) {
       return null;
     }
-    let value = this.#facts[name].value;
-    let history = this.#facts[name].history;
-    let changed = this.#facts[name].changed;
+    let value = this._facts[name].value;
+    let history = this._facts[name].history;
+    let changed = this._facts[name].changed;
     return {name, value, history, changed};
   }
 
@@ -118,7 +118,7 @@ class StugnaES {
    */
   factGetPredecessorsWanted(name) {
     let predecessors = [];
-    for (let rule of this.#rules) {
+    for (let rule of this._rules) {
       if (rule.fact === name) {
         for (let predecessor of rule.variables) {
           if (!predecessors.includes(predecessor)) {
@@ -148,7 +148,7 @@ class StugnaES {
     let unknown = [];
     let predecessors = this.factGetPredecessorsWanted(name);
     for (let fact of predecessors) {
-      if (this.#facts[fact] === undefined) {
+      if (this._facts[fact] === undefined) {
         unknown.push(fact);
       }
     }
@@ -176,7 +176,7 @@ class StugnaES {
    * @returns {{name: string, value: (number|string), history: string[], changed: boolean}[]}
    */
   factsAllAsArray() {
-    return Object.values(this.#facts).map(fact => { return {
+    return Object.values(this._facts).map(fact => { return {
       name: fact.name,
       value: fact.value,
       history: fact.history,
@@ -189,8 +189,8 @@ class StugnaES {
    */
   factsAllAsMap() {
     let facts = {};
-    for (let name in this.#facts) {
-      facts[name] = this.#facts[name].value;
+    for (let name in this._facts) {
+      facts[name] = this._facts[name].value;
     }
     return facts;
   }
@@ -199,14 +199,14 @@ class StugnaES {
    * @returns {boolean}
    */
   factsAreOrdered () {
-    return this.#factsAreOrdered;
+    return this._factsAreOrdered;
   }
 
   /**
    *
    */
   factsClear() {
-    this.#facts = {};
+    this._facts = {};
     this.eventAdd('facts clear', 'all facts are cleaned');
   }
 
@@ -224,8 +224,8 @@ class StugnaES {
     if (ruleError) {
       this.eventAdd('rule error', ruleError);
     } else {
-      this.#rules.push(rule);
-      this.#rules.sort((a, b) => {
+      this._rules.push(rule);
+      this._rules.sort((a, b) => {
         if (b.priority > a.priority) return -1;
         if (a.priority > b.priority) return 1;
         return 0;
@@ -262,7 +262,7 @@ class StugnaES {
    * @returns {object[]}
    */
   rulesAll() {
-    return this.#rules.map(rule => { return {
+    return this._rules.map(rule => { return {
       condition: rule.condition,
       factName: rule.fact,
       valueValue: rule.fact,
@@ -275,7 +275,7 @@ class StugnaES {
    *
    */
   rulesClear() {
-    this.#rules = [];
+    this._rules = [];
     this.eventAdd('rules clear', 'all rules are cleaned');
   }
 
@@ -283,15 +283,15 @@ class StugnaES {
    * Regularize all rules and facts
    */
   order () {
-    this.#factsAreOrdered = false;
+    this._factsAreOrdered = false;
     let passCount = 1;
-    while (passCount <= this.#passCountMax) {
+    while (passCount <= this._passCountMax) {
       // one pass - check all rules
       let factsChanged = 0;
-      for (let rule of this.#rules) {
-        if (rule.check(this.#facts)) {
+      for (let rule of this._rules) {
+        if (rule.check(this._facts)) {
           let factNew = new Fact(rule.fact, rule.value, `rule: ${rule.description}`);
-          let factOld = this.#facts[rule.fact];
+          let factOld = this._facts[rule.fact];
           if (factOld) {
             if (factOld.value === factNew.value) {
               continue; // there are no changes
@@ -300,14 +300,14 @@ class StugnaES {
             factNew.history = factOld.history;
           }
           factNew.changed = true;
-          this.#facts[rule.fact] = factNew;
+          this._facts[rule.fact] = factNew;
           this.eventAdd('rule ok', rule.description);
           factsChanged++;
         }
       }
       
       if (!factsChanged) {
-        this.#factsAreOrdered = true;
+        this._factsAreOrdered = true;
         break;
       }
         
@@ -315,7 +315,7 @@ class StugnaES {
       passCount++;
     }
 
-    if (!this.#factsAreOrdered && this.#toSaveEvents) {
+    if (!this._factsAreOrdered && this._toSaveEvents) {
       this.eventAdd('rules error', ERROR_STUGNA_PERIODIC_RULES);
     }
   }
