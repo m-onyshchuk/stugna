@@ -409,6 +409,7 @@ console.log (wanted);
 
 ### factGetPredecessorsUnknown
 Returns fact names which are still unknown to determine asked fact.
+Facts that can be obtained using rules are not included in the returned list.
 ```js
 let name = "transport"; 
 let unknown = es.factGetPredecessorsUnknown(name);

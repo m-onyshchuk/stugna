@@ -119,6 +119,7 @@ console.log ('\n--- factGetPredecessorsUnknown ---');
 console.log (unknown);
 
 let ordered = es.factsAreOrdered();
+console.log ('\n--- factsAreOrdered ---');
 console.log (ordered);
 
 ///

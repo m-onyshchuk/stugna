@@ -127,16 +127,16 @@ class StugnaES {
         }
       }
     }
-    let tail = [];
+    let childrenAll = []; // may contain duplicates
     for (let predecessor1 of predecessors) {
       let children = this.factGetPredecessorsWanted(predecessor1);
-      for (let predecessor2 of children) {
-        if (!tail.includes(predecessor2) && !predecessors.includes(predecessor2)) {
-          tail.push(predecessor2);
-        }
+      childrenAll = childrenAll.concat(children);
+    }
+    for (let fact of childrenAll) { // filter duplicates
+      if (!predecessors.includes(fact)) {
+        predecessors.push(fact);
       }
     }
-    predecessors = predecessors.concat(tail);
     return predecessors;
   }
 
@@ -145,14 +145,33 @@ class StugnaES {
    * @returns {string[]}
    */
   factGetPredecessorsUnknown(name) {
-    let unknown = [];
-    let predecessors = this.factGetPredecessorsWanted(name);
-    for (let fact of predecessors) {
+    // find all wanted facts
+    let wanted = this.factGetPredecessorsWanted(name);
+
+    // exclude known facts
+    let unknownWithRules = [];
+    for (let fact of wanted) {
       if (this._facts[fact] === undefined) {
-        unknown.push(fact);
+        unknownWithRules.push(fact);
       }
     }
-    return unknown;
+
+    // exclude facts that can be produced by the rules
+    let unknownWithoutRules = [];
+    for (let fact of unknownWithRules) {
+      let noRuleForFact = true;
+      for (let rule of this._rules) {
+        if (rule.fact === fact) {
+          noRuleForFact = false;
+          break;
+        }
+      }
+      if (noRuleForFact) {
+        unknownWithoutRules.push(fact);
+      }
+    }
+
+    return unknownWithoutRules;
   }
 
   /**
