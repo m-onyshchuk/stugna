@@ -67,8 +67,8 @@ class Rule {
       this.description = description; // detailed rule description
     else
       this.description = condition;
-    this.tokens = null;              // parsed rule tokens
-    this.calc = null;                // reverse polish notation for rule condition calculation
+    this.tokens = [];                // parsed rule tokens
+    this.calc = [];                  // reverse polish notation for rule condition calculation
     this.error = null;               // rule`s error
     this.variables = [];             // variables list from rule
 
@@ -221,12 +221,10 @@ class Rule {
       }
 
       if (inStr) { // inside 'string with spaces'
-        if (part.length) {
-          str.push(part);
-          let posQuoteSecond = part.indexOf("'", posQuoteFirst+1);
-          if (posQuoteSecond !== -1) {
-            inStr = 2;
-          }
+        str.push(part);
+        let posQuoteSecond = part.indexOf("'", posQuoteFirst+1);
+        if (posQuoteSecond !== -1) {
+          inStr = 2;
         }
       } else {
         if (part.length > 0) {
@@ -371,13 +369,11 @@ class Rule {
     }
 
     this.variables = [];
-    if (this.calc) {
-      for (let token of this.calc) {
-        if (token.type === TOKEN_VARIABLE) {
-          let exist = this.variables.includes(token.value);
-          if (!exist) {
-            this.variables.push(token.value);
-          }
+    for (let token of this.calc) {
+      if (token.type === TOKEN_VARIABLE) {
+        let exist = this.variables.includes(token.value);
+        if (!exist) {
+          this.variables.push(token.value);
         }
       }
     }
@@ -396,9 +392,7 @@ class Rule {
    */
   getCalcString() {
     let str = '';
-    if (this.calc) {
-      str = this.calc.map(token => token.value).join(' ');
-    }
+    str = this.calc.map(token => token.value).join(' ');
     return str;
   }
 
@@ -447,7 +441,7 @@ class Rule {
               } else {
                 a = stack.pop();
               }
-              let result = operator.calc ? operator.calc(a, b) : false;
+              let result = operator.calc(a, b);
               if (typeof result === 'number' && (isNaN(result) || !isFinite(result))) {
                 result = false;
                 // if (allowConsoleLog) {
