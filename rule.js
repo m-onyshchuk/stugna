@@ -1,4 +1,5 @@
 'use strict';
+
 const {
   ERROR_RULE_CONDITION_EMPTY,
   ERROR_RULE_FACT_NAME_EMPTY,

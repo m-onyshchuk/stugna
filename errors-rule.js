@@ -1,3 +1,5 @@
+'use strict';
+
 const ERROR_RULE_CONDITION_EMPTY = 'Rule condition cannot be empty';
 const ERROR_RULE_FACT_NAME_EMPTY = 'Fact name cannot be empty';
 const ERROR_RULE_FACT_NAME_HAS_SPACES = 'Fact name cannot contain spaces';

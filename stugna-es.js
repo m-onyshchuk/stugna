@@ -1,4 +1,5 @@
 'use strict';
+
 const {Fact} = require("./fact");
 const {Rule} = require("./rule");
 const {
