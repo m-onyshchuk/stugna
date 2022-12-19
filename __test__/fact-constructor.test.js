@@ -1,6 +1,6 @@
 'use strict';
 const {Fact} = require('../fact');
-describe('Facts', () => {
+describe('Fact constructors', () => {
 
   test(`Boolean true`, () => {
     let fact = new Fact('fact-name', 'TRUE', 'fact-description');

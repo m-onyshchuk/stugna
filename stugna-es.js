@@ -3,8 +3,18 @@
 const {Fact} = require("./fact");
 const {Rule} = require("./rule");
 const {
+  ERROR_FACT_NAME_ABSENT,
+  ERROR_FACT_NAME_EMPTY,
+  ERROR_FACT_VALUE_ABSENT,
+} = require('./errors-fact');
+const {
+  ERROR_RULE_CONDITION_EMPTY,
+  ERROR_RULE_FACT_NAME_EMPTY,
+  ERROR_RULE_FACT_VALUE_EMPTY,
+} = require('./errors-rule');
+const {
   ERROR_STUGNA_SPACE_IN_FACT_NAME,
-  ERROR_STUGNA_PERIODIC_RULES
+  ERROR_STUGNA_PERIODIC_RULES,
 } = require('./errors-stugna-es');
 
 const regexpWhiteSpaces = new RegExp('\\s+', 'g');
@@ -68,16 +78,48 @@ class StugnaES {
   }
 
   /**
-   * @param name {string}
-   * @param value {string|number|boolean}
-   * @param description {string}
+   * @param name {string|null|undefined}
+   * @param value {string|number|boolean|null|undefined}
+   * @returns {boolean}
+   * @private
+   */
+  _factIsValid(name, value) {
+    if (name === null || name === undefined) {
+      this.eventAdd('fact error', ERROR_FACT_NAME_ABSENT);
+      return false;
+    }
+    name = name.toString();
+    let nameTrimmed = name.trim()
+    if (nameTrimmed.length === 0) {
+      this.eventAdd('fact error', ERROR_FACT_NAME_EMPTY);
+      return false;
+    }
+    if (regexpWhiteSpaces.test(name)) {
+      this.eventAdd('fact error', ERROR_STUGNA_SPACE_IN_FACT_NAME + name);
+      return false;
+    }
+    if (value === null || value === undefined) {
+      this.eventAdd('fact error', ERROR_FACT_VALUE_ABSENT);
+      return false;
+    }
+    return true
+  }
+
+  /**
+   * @param name {string|null|undefined}
+   * @param value {string|number|boolean|null|undefined}
+   * @param description {string|null|undefined}
    * @param toRegularize {boolean}
    */
   factAdd({name, value, description}, isTrigger = true) {
-    if (regexpWhiteSpaces.test(name)) {
-      this.eventAdd('fact fail', ERROR_STUGNA_SPACE_IN_FACT_NAME + name);
-      return;
+    if (!this._factIsValid(name, value)) {
+      return
     }
+
+    if (!description) {
+      description = `${name}: ${value}`;
+    }
+
     let factNew = new Fact(name, value, `init: ${description}`);
     let factOld = this._facts[name];
     if (factOld) {
@@ -85,6 +127,7 @@ class StugnaES {
       factNew.history = factOld.history;
     }
     this._facts[name] = factNew;
+
     this.eventAdd('fact add', description);
     if (isTrigger) {
       this._order();
@@ -180,14 +223,15 @@ class StugnaES {
    * @param isTrigger {boolean}
    */
   factsImport(facts, isTrigger = true) {
+    let addedCount = 0;
     for (let fact of facts) {
-      if (fact.name !== undefined && fact.value !== undefined && fact.description !== undefined) {
-        this.factAdd(fact, false);
-      } else {
-        this.eventAdd('fact skip', JSON.stringify(fact));
+      if (!this._factIsValid(fact.name, fact.value)) {
+        continue;
       }
+      this.factAdd(fact, false);
+      addedCount++;
     }
-    if (isTrigger) {
+    if (isTrigger && addedCount > 0) {
       this._order();
     }
   }
@@ -269,6 +313,16 @@ class StugnaES {
         rule.priority = rule.priority ? rule.priority : 1;
         rule.description = rule.description ? rule.description : null;
         this.ruleAdd(rule, false);
+      } else {
+        if (rule.condition === undefined) {
+          this.eventAdd('rule error', ERROR_RULE_CONDITION_EMPTY);
+        }
+        if (rule.factName === undefined) {
+          this.eventAdd('rule error', ERROR_RULE_FACT_NAME_EMPTY);
+        }
+        if (rule.factValue === undefined) {
+          this.eventAdd('rule error', ERROR_RULE_FACT_VALUE_EMPTY);
+        }
       }
     }
     if (isTrigger) {

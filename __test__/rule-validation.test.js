@@ -18,8 +18,24 @@ const validations = [
     error: ERROR_RULE_CONDITION_EMPTY
   },
   {
+    // condition: "", // condition is absent
+    factName: "***",
+    factValue: "***",
+    priority: "***",
+    description: "***",
+    error: ERROR_RULE_CONDITION_EMPTY
+  },
+  {
     condition: "***",
     factName: "",
+    factValue: "***",
+    priority: "***",
+    description: "***",
+    error: ERROR_RULE_FACT_NAME_EMPTY
+  },
+  {
+    condition: "***",
+    // factName: "", // factName is absent
     factValue: "***",
     priority: "***",
     description: "***",
@@ -40,7 +56,15 @@ const validations = [
     priority: "***",
     description: "***",
     error: ERROR_RULE_FACT_VALUE_EMPTY
-  }
+  },
+  {
+    condition: "***",
+    factName: "***",
+    // factValue: null, // factValue is absent
+    priority: "***",
+    description: "***",
+    error: ERROR_RULE_FACT_VALUE_EMPTY
+  },
 ]
 
 describe('Rule validation', () => {

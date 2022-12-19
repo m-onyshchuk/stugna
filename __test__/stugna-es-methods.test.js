@@ -149,21 +149,6 @@ describe('StugnaES methods', () => {
     expect(factsUnknown).toEqual( expect.arrayContaining(expected));
   });
 
-  test(`method factsImport / empty case`, () => {
-    let es = new StugnaES();
-    let facts = [
-      {
-        name: "wheels",
-        value: 4,
-        description: "This transport has 4 wheels"
-      },
-      {}
-    ];
-    es.factsImport(facts);
-    let events = es.eventsAll();
-    expect(events[1].brief).toEqual('fact skip');
-  });
-
   test(`method factsImport / trigger off`, () => {
     let es = new StugnaES();
     let rules = [
