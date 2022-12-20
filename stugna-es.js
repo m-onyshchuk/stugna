@@ -56,10 +56,18 @@ class StugnaES {
   /**
    * @param brief {string}
    * @param more {string}
+   * @param subject {string}
    */
-  eventAdd(brief, more) {
+  eventAdd(brief, more, subject) {
     if (this._toSaveEvents) {
-      this._events.push({brief, more});
+      let event = {brief}
+      if (more) {
+        event.more = more;
+      }
+      if (subject) {
+        event.subject = subject;
+      }
+      this._events.push(event);
     }
   }
 
@@ -116,19 +124,20 @@ class StugnaES {
       return
     }
 
-    if (!description) {
-      description = `${name}: ${value}`;
+    let subject = description;
+    if (!subject) {
+      subject = `${name}: ${value}`;
     }
 
-    let factNew = new Fact(name, value, `init: ${description}`);
+    let factNew = new Fact(name, value, subject);
     let factOld = this._facts[name];
     if (factOld) {
-      factOld.history.push(`init: ${description}`);
+      factOld.history.push(`init: ${subject}`);
       factNew.history = factOld.history;
     }
     this._facts[name] = factNew;
 
-    this.eventAdd('fact add', description);
+    this.eventAdd('fact add', null, subject);
     if (isTrigger) {
       this._order();
     }
@@ -283,19 +292,29 @@ class StugnaES {
    * @param isTrigger {boolean}
    */
   ruleAdd({condition, factName, factValue, priority, description}, isTrigger = true) {
-    let rule = new Rule(condition, factName, factValue, priority, description);
-    let ruleError = rule.getError();
+    let ruleError = Rule.validate(condition, factName, factValue);
+    if (!description) {
+      description = `${condition} / ${factName} / ${factValue}`
+    }
     if (ruleError) {
-      this.eventAdd('rule error', ruleError);
-    } else {
-      this._rules.push(rule);
-      this._rules.sort((a, b) => {
-        return a.priority - b.priority; // by priority ASC
-      });
-      this.eventAdd('rule add', description);
-      if (isTrigger) {
-        this._order();
-      }
+      this.eventAdd('rule error', ruleError, description); // validation errors
+      return;
+    }
+
+    let rule = new Rule(condition, factName, factValue, priority, description);
+    ruleError = rule.getError();
+    if (ruleError) {
+      this.eventAdd('rule error', ruleError, description); // parsing errors
+      return
+    }
+
+    this._rules.push(rule);
+    this._rules.sort((a, b) => {
+      return a.priority - b.priority; // by priority ASC
+    });
+    this.eventAdd('rule add', null, description);
+    if (isTrigger) {
+      this._order();
     }
   }
 
@@ -305,25 +324,18 @@ class StugnaES {
    */
   rulesImport(rules, isTrigger = true) {
     for (let rule of rules) {
-      if (
-        rule.condition !== undefined &&
-        rule.factName !== undefined &&
-        rule.factValue !== undefined
-      ) {
-        rule.priority = rule.priority ? rule.priority : 1;
-        rule.description = rule.description ? rule.description : null;
-        this.ruleAdd(rule, false);
-      } else {
-        if (rule.condition === undefined) {
-          this.eventAdd('rule error', ERROR_RULE_CONDITION_EMPTY);
-        }
-        if (rule.factName === undefined) {
-          this.eventAdd('rule error', ERROR_RULE_FACT_NAME_EMPTY);
-        }
-        if (rule.factValue === undefined) {
-          this.eventAdd('rule error', ERROR_RULE_FACT_VALUE_EMPTY);
-        }
+      let ruleError = Rule.validate(rule.condition, rule.factName, rule.factValue);
+      let subject = rule.description;
+      if (!subject) {
+        subject = `${rule.condition} / ${rule.factName} / ${rule.factValue}`
       }
+      if (ruleError) {
+        this.eventAdd('rule error', ruleError, subject);
+        continue;
+      }
+
+      rule.priority = rule.priority ? rule.priority : 1;
+      this.ruleAdd(rule, false);
     }
     if (isTrigger) {
       this._order();

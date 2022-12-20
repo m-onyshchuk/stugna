@@ -27,11 +27,6 @@ class Fact {
     }
     this.value = value;
 
-    // description
-    if (!description) {
-      description = 'fact created (1)';
-    }
-
     // etc
     this.history = [description];
     this.changed = false; // false - init fact value; true - fact value changed by rules

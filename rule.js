@@ -74,13 +74,12 @@ class Rule {
     if (description)
       this.description = description; // detailed rule description
     else
-      this.description = condition;
+      this.description = `${condition} / ${factName} / ${factValue}`;
+    this.error = null;               // rule error
     this.tokens = [];                // parsed rule tokens
     this.calc = [];                  // reverse polish notation for rule condition calculation
-    this.error = null;               // rule`s error
     this.variables = [];             // variables list from rule
 
-    this._validate();
     this._tokenize(condition);
     this._parse();
     this._collectVariables();
@@ -126,22 +125,20 @@ class Rule {
   /**
    * Validate rule inputs
    */
-  _validate () {
-    if (!this.condition) {
-      this.error = ERROR_RULE_CONDITION_EMPTY;
-      return;
+  static validate (condition, fact, value) {
+    if (!condition) {
+      return ERROR_RULE_CONDITION_EMPTY;
     }
-    if (!this.fact) {
-      this.error = ERROR_RULE_FACT_NAME_EMPTY;
-      return;
+    if (!fact) {
+      return ERROR_RULE_FACT_NAME_EMPTY;
     }
-    if(regexpWhiteSpaces.test(this.fact)) {
-      this.error = ERROR_RULE_FACT_NAME_HAS_SPACES;
-      return;
+    if(regexpWhiteSpaces.test(fact)) {
+      return ERROR_RULE_FACT_NAME_HAS_SPACES;
     }
-    if (this.value === null || this.value === undefined) {
-      this.error = ERROR_RULE_FACT_VALUE_EMPTY;
+    if (value === null || value === undefined) {
+      return ERROR_RULE_FACT_VALUE_EMPTY;
     }
+    return null;
   }
 
   /**
