@@ -201,7 +201,16 @@ describe('StugnaES methods', () => {
     expect(rulesOutput.length).toEqual(0);
   });
 
-  test(`method ruleAdd / wrong condition`, () => {
+  test(`method ruleAdd / validation error`, () => {
+    let es = new StugnaES();
+    es.ruleAdd(      {
+      condition: "1=1",
+    });
+    let events = es.eventsAll();
+    expect(events[0].brief).toEqual('rule error');
+  });
+
+  test(`method ruleAdd / parsing error`, () => {
     let es = new StugnaES();
     es.ruleAdd(      {
       condition: "season = winter'",

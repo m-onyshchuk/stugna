@@ -185,9 +185,6 @@ class Rule {
    * @param raw {string}
    */
   _tokenize(raw) {
-    if (this.error) {
-      return;
-    }
     let tokens = [];
 
     // preprocess
