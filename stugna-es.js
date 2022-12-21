@@ -28,6 +28,7 @@ class StugnaES {
   _facts;
   _events;
   _toSaveEvents;
+  _toExplainMore;
   _passCountMax;
   _factsAreOrdered;
 
@@ -36,20 +37,25 @@ class StugnaES {
    */
   constructor(options = null) {
     let toSaveEvents = true;
+    let toExplainMore = false;
     let passCountMax = 16;
     if (options) {
       if (options.toSaveEvents !== undefined) {
         toSaveEvents = options.toSaveEvents;
       }
+      if (options.toExplainMore !== undefined) {
+        toExplainMore = options.toExplainMore;
+      }
       if (options.passCountMax !== undefined) {
         passCountMax = options.passCountMax;
       }
     }
-    this._rules = [];
-    this._facts = {};
+    this._rules  = [];
+    this._facts  = {};
     this._events = [];
-    this._toSaveEvents = toSaveEvents;
-    this._passCountMax = passCountMax;
+    this._toSaveEvents  = toSaveEvents;
+    this._toExplainMore = toExplainMore;
+    this._passCountMax  = passCountMax;
     this._factsAreOrdered = true;
   }
 
@@ -373,7 +379,10 @@ class StugnaES {
       // one pass - check all rules
       let factsChanged = 0;
       for (let rule of this._rules) {
-        if (rule.check(this._facts)) {
+        let diagnostics = {
+          toExplainMore: this._toExplainMore
+        };
+        if (rule.check(this._facts, diagnostics)) {
           let factNew = new Fact(rule.fact, rule.value, `rule: ${rule.description}`);
           let factOld = this._facts[rule.fact];
           if (factOld) {
@@ -385,8 +394,12 @@ class StugnaES {
           }
           factNew.changed = true;
           this._facts[rule.fact] = factNew;
-          this.eventAdd('rule ok', rule.description);
+          this.eventAdd('rule ok', null, rule.description);
           factsChanged++;
+        } else {
+          if (this._toExplainMore && diagnostics.missingFact) {
+            this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
+          }
         }
       }
       

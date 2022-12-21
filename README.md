@@ -98,7 +98,7 @@ console.log(factWanted);
 // {
 //   name: 'transport',
 //   value: 'skateboard',
-//   history: [ "rule: wheels = 4 AND motor = 'missing'" ],
+//   history: [ "rule: wheels = 4 AND motor = 'missing' / transport / skateboard" ],
 //   changed: true
 // }
 ```
@@ -117,12 +117,15 @@ Instance creating
 const {StugnaES} = require("stugna-es");
 let options = {
   toSaveEvents: true,
+  toExplainMore: false,
   passCountMax: 16
 };
 let es = new StugnaES(options);
 ```
 * options - object with optional fields:
   * toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.
+  * toExplainMore - parameter for extended explanation of rule processing. Explanations are saved in the [events log](#eventsall). 
+    Default value is `false`. 
   * passCountMax - parameter to limit passing by rules list. Read more in [periodic rules](#periodic-rules). 
     Default value is `16`.    
 
@@ -160,7 +163,7 @@ es.ruleAdd(rule, isTrigger);
     * `AND` - logical AND operator (logical conjunction) for a set of boolean operands will be true if and only if all 
       the operands are true. Otherwise, it will be false.
     * `OR` - logical OR operator (logical disjunction) for a set of operands is true if and only if one or more of its 
-      operands is true.
+      operands is true. 
     * `NOT` - logical NOT operator (logical complement, negation) takes truth to falsity and vice versa, 
       example: `NOT FALSE`
     * `+` - arithmetic addition operator for numbers and concatenation operator for strings, example with numbers: 
@@ -442,39 +445,39 @@ console.log (events);
 [
   {
     brief: 'rule add',
-    more: 'Transport with weight more than 20 ton looks like a bus'
+    subject: 'Transport with weight more than 20 ton looks like a bus'
   },
   {
     brief: 'rule add',
-    more: 'Transport with engine and 4 wheels is a car'
+    subject: 'Transport with engine and 4 wheels is a car'
   },
   {
     brief: 'rule add',
-    more: 'Transport with engine and 2 wheels is a motorcycle'
+    subject: 'Transport with engine and 2 wheels is a motorcycle'
   },
   {
     brief: 'rule add',
-    more: 'Transport with 4 wheels and without engine is a skateboard'
+    subject: 'Transport with 4 wheels and without engine is a skateboard'
   },
   {
     brief: 'rule add',
-    more: 'Transport with 2 wheels and without engine is a bike'
+    subject: 'Transport with 2 wheels and without engine is a bike'
   },
   { 
     brief: 'fact add', 
-    more: 'Transport has 2 wheels' 
+    subject: 'Transport has 2 wheels' 
   },
   { 
     brief: 'fact add', 
-    more: 'This transport has 4 wheels' 
+    subject: 'This transport has 4 wheels' 
   },
   { 
     brief: 'fact add', 
-    more: 'This transport does`t have motor' 
+    subject: 'This transport does`t have motor' 
   },
   {
     brief: 'rule ok',
-    more: 'Transport with 4 wheels and without engine is a skateboard'
+    subject: 'Transport with 4 wheels and without engine is a skateboard'
   },
   { 
     brief: 'rules passed', 
@@ -557,20 +560,20 @@ console.log (facts);
 /*
 false
 [
-  { brief: 'fact add', more: 'Initial value of season fact' },
-  { brief: 'rule add', more: 'After winter comes spring' },
-  { brief: 'rule add', more: 'After spring comes summer' },
-  { brief: 'rule add', more: 'After summer comes autumn' },
-  { brief: 'rule add', more: 'After autumn comes winter' },
-  { brief: 'rule ok', more: 'After winter comes spring' },
-  { brief: 'rule ok', more: 'After spring comes summer' },
-  { brief: 'rule ok', more: 'After summer comes autumn' },
-  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'fact add', subject: 'Initial value of season fact' },
+  { brief: 'rule add', subject: 'After winter comes spring' },
+  { brief: 'rule add', subject: 'After spring comes summer' },
+  { brief: 'rule add', subject: 'After summer comes autumn' },
+  { brief: 'rule add', subject: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After winter comes spring' },
+  { brief: 'rule ok', subject: 'After spring comes summer' },
+  { brief: 'rule ok', subject: 'After summer comes autumn' },
+  { brief: 'rule ok', subject: 'After autumn comes winter' },
   { brief: 'rules passed', more: 'Rules pass count is 1' },
-  { brief: 'rule ok', more: 'After winter comes spring' },
-  { brief: 'rule ok', more: 'After spring comes summer' },
-  { brief: 'rule ok', more: 'After summer comes autumn' },
-  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After winter comes spring' },
+  { brief: 'rule ok', subject: 'After spring comes summer' },
+  { brief: 'rule ok', subject: 'After summer comes autumn' },
+  { brief: 'rule ok', subject: 'After autumn comes winter' },
   { brief: 'rules passed', more: 'Rules pass count is 2' },
   { brief: 'rules error', more: 'Periodic rules detected' }
 ]

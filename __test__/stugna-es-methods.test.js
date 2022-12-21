@@ -24,26 +24,44 @@ describe('StugnaES methods', () => {
 
   test(`constructor defaults`, () => {
     const toSaveEvents = true;
+    const toExplainMore = false;
     const passCountMax = 16;
     let es = new StugnaES();
     expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._toExplainMore).toEqual(toExplainMore);
+    expect(es._passCountMax).toEqual(passCountMax);
+  });
+
+  test(`constructor defaults-2 (void object)`, () => {
+    const toSaveEvents = true;
+    const toExplainMore = false;
+    const passCountMax = 16;
+    let es = new StugnaES({});
+    expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._toExplainMore).toEqual(toExplainMore);
     expect(es._passCountMax).toEqual(passCountMax);
   });
 
   test(`constructor custom`, () => {
     const toSaveEvents = false;
+    const toExplainMore = true;
     const passCountMax = 42;
-    let es = new StugnaES({toSaveEvents, passCountMax});
+    let es = new StugnaES({toSaveEvents, toExplainMore, passCountMax});
     expect(es._toSaveEvents).toEqual(toSaveEvents);
+    expect(es._toExplainMore).toEqual(toExplainMore);
     expect(es._passCountMax).toEqual(passCountMax);
   });
 
-  test(`constructor wrong`, () => {
-    const toSaveEvents = true;
-    const passCountMax = 16;
-    let es = new StugnaES({});
-    expect(es._toSaveEvents).toEqual(toSaveEvents);
-    expect(es._passCountMax).toEqual(passCountMax);
+  test(`constructor / explain more`, () => {
+    let es = new StugnaES({toExplainMore: true});
+    es.factAdd(  { name: "factOne", value: 1 });
+    es.ruleAdd(      {
+      condition: "factOne = 1 OR factTwo = 1",
+      factValue: "factThree",
+      factName: 1
+    });
+    let events = es.eventsAll();
+    expect(events[2].brief).toEqual('rule skip');
   });
 
   test(`method factIsKnown`, () => {

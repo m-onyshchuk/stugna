@@ -401,15 +401,19 @@ class Rule {
   /**
    * Calc prepared reverse polish notation in this.calc
    * @param facts
+   * @param diagnostics
    * @returns {boolean}
    */
-  check (facts) {
+  check (facts, diagnostics) {
     let result = false;
     // let allowConsoleLog = !PROD;
     try {
       // 1) check wanted variables
       for (let variable of this.variables) {
         if (facts[variable] === undefined) {
+          if (diagnostics.toExplainMore) {
+            diagnostics.missingFact = variable;
+          }
           return false; // rule variable is absent, break rule checking
         }
       }
