@@ -21,7 +21,7 @@ let rulesIn = [
     factName: "rule",
   }
 ];
-es.ruleAdd(rulesIn[0]);
+es.rulesImport(rulesIn);
 
 let events = es.eventsAll();
 console.log (events);

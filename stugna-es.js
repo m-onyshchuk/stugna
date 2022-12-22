@@ -8,11 +8,6 @@ const {
   ERROR_FACT_VALUE_ABSENT,
 } = require('./errors-fact');
 const {
-  ERROR_RULE_CONDITION_EMPTY,
-  ERROR_RULE_FACT_NAME_EMPTY,
-  ERROR_RULE_FACT_VALUE_EMPTY,
-} = require('./errors-rule');
-const {
   ERROR_STUGNA_SPACE_IN_FACT_NAME,
   ERROR_STUGNA_PERIODIC_RULES,
 } = require('./errors-stugna-es');
