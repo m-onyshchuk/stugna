@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.1.18
+Fixed vulnerabilities in the included packages
+
 ## 1.1.17
 Parameter `toExplainMore` in `StugnaES` constructor.
 
