@@ -173,7 +173,7 @@ class StugnaES {
   factGetPredecessorsWanted(name) {
     let predecessors = [];
     for (let rule of this._rules) {
-      if (rule.fact === name) {
+      if (rule.fact === name || rule.factElse === name) {
         for (let predecessor of rule.variables) {
           if (!predecessors.includes(predecessor)) {
             predecessors.push(predecessor);
@@ -215,7 +215,7 @@ class StugnaES {
     for (let fact of unknownWithRules) {
       let noRuleForFact = true;
       for (let rule of this._rules) {
-        if (rule.fact === fact) {
+        if (rule.fact === fact || rule.factElse === fact) {
           noRuleForFact = false;
           break;
         }
@@ -391,15 +391,20 @@ class StugnaES {
    * @private
    */
   _applyFact(factName, factValue, eventName, ruleDescription) {
+    let factIsChanged = 0;
     let factNew = new Fact(factName, factValue, `${eventName}: ${ruleDescription}`);
     let factOld = this._facts[factName];
-    if (factOld && factOld.value !== factNew.value) { // has changes
-      factOld.history.push(`rule: ${ruleDescription}`);
-      factNew.history = factOld.history;
+    if (!factOld || factOld.value !== factNew.value) { // has changes
+      if (factOld) {
+        factOld.history.push(`${eventName}: ${ruleDescription}`);
+        factNew.history = factOld.history;
+      }
       factNew.changed = true;
       this._facts[factName] = factNew;
       this.eventAdd(eventName, null, ruleDescription);
+      factIsChanged = 1;
     }
+    return factIsChanged;
   }
 
   /**
@@ -416,12 +421,10 @@ class StugnaES {
           toExplainMore: this._toExplainMore
         };
         if (rule.check(this._facts, diagnostics)) {
-          this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
-          factsChanged++;
+          factsChanged += this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
         } else {
           if (rule.hasElse()) {
-            this._applyFact(rule.factElse, rule.valueElse, 'rule else', rule.description);
-            factsChanged++;
+            factsChanged += this._applyFact(rule.factElse, rule.valueElse, 'rule else', rule.description);
           } else {
             if (this._toExplainMore && diagnostics.missingFact) {
               this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
