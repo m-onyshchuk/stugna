@@ -364,12 +364,12 @@ class StugnaES {
         priority: rule.priority,
         description: rule.description
       }
-      if (item.factNameElse === null) {
-        delete item.factNameElse;
-      }
-      if (item.factValueElse === null) {
-        delete item.factValueElse;
-      }
+      // if (item.factNameElse === null) {
+      //   delete item.factNameElse;
+      // }
+      // if (item.factValueElse === null) {
+      //   delete item.factValueElse;
+      // }
       all.push(item);
     }
     return all;

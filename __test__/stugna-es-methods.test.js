@@ -315,8 +315,8 @@ describe('StugnaES methods', () => {
     es.rulesImport(rulesIn);
     let rulesOut = es.rulesAll();
     let ruleOne = rulesOut[0];
-    expect(ruleOne.factNameElse).toBeUndefined();
-    expect(ruleOne.factValueElse).toBeUndefined();
+    expect(ruleOne.factNameElse).toBeNull();
+    expect(ruleOne.factValueElse).toBeNull();
   });
 
   test(`periodic rule detection`, () => {
