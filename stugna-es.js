@@ -56,8 +56,8 @@ class StugnaES {
 
   /**
    * @param brief {string}
-   * @param more {string}
-   * @param subject {string}
+   * @param more {string|null}
+   * @param subject {string|null}
    */
   eventAdd(brief, more, subject) {
     if (this._toSaveEvents) {
@@ -290,10 +290,16 @@ class StugnaES {
    * @param factValue {string}
    * @param priority {number}
    * @param description {string}
+   * @param factNameElse {string}
+   * @param factValueElse {string}
    * @param isTrigger {boolean}
    */
-  ruleAdd({condition, factName, factValue, priority, description}, isTrigger = true) {
-    let ruleError = Rule.validate(condition, factName, factValue);
+  ruleAdd({ condition,
+            factName, factValue,
+            priority, description,
+            factNameElse, factValueElse,
+          }, isTrigger = true) {
+    let ruleError = Rule.validate(condition, factName, factValue, factNameElse, factValueElse);
     if (!description) {
       description = `${condition} / ${factName} / ${factValue}`
     }
@@ -302,7 +308,7 @@ class StugnaES {
       return;
     }
 
-    let rule = new Rule(condition, factName, factValue, priority, description);
+    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse);
     ruleError = rule.getError();
     if (ruleError) {
       this.eventAdd('rule error', ruleError, description); // parsing errors
@@ -325,7 +331,7 @@ class StugnaES {
    */
   rulesImport(rules, isTrigger = true) {
     for (let rule of rules) {
-      let ruleError = Rule.validate(rule.condition, rule.factName, rule.factValue);
+      let ruleError = Rule.validate(rule.condition, rule.factName, rule.factValue, rule.factNameElse, rule.factValueElse);
       let subject = rule.description;
       if (!subject) {
         subject = `${rule.condition} / ${rule.factName} / ${rule.factValue}`
@@ -347,13 +353,26 @@ class StugnaES {
    * @returns {object[]}
    */
   rulesAll() {
-    return this._rules.map(rule => { return {
-      condition: rule.condition,
-      factName: rule.fact,
-      valueValue: rule.fact,
-      priority: rule.priority,
-      description: rule.description
-    }});
+    let all = [];
+    for (let rule of this._rules) {
+      let item = {
+        condition: rule.condition,
+        factName: rule.fact,
+        factValue: rule.value,
+        factNameElse: rule.factElse,
+        factValueElse: rule.valueElse,
+        priority: rule.priority,
+        description: rule.description
+      }
+      if (item.factNameElse === null) {
+        delete item.factNameElse;
+      }
+      if (item.factValueElse === null) {
+        delete item.factValueElse;
+      }
+      all.push(item);
+    }
+    return all;
   }
 
   /**
@@ -362,6 +381,25 @@ class StugnaES {
   rulesClear() {
     this._rules = [];
     this.eventAdd('rules clear', 'all rules are cleaned');
+  }
+
+  /**
+   * @param factName
+   * @param factValue
+   * @param eventName
+   * @param ruleDescription
+   * @private
+   */
+  _applyFact(factName, factValue, eventName, ruleDescription) {
+    let factNew = new Fact(factName, factValue, `${eventName}: ${ruleDescription}`);
+    let factOld = this._facts[factName];
+    if (factOld && factOld.value !== factNew.value) { // has changes
+      factOld.history.push(`rule: ${ruleDescription}`);
+      factNew.history = factOld.history;
+      factNew.changed = true;
+      this._facts[factName] = factNew;
+      this.eventAdd(eventName, null, ruleDescription);
+    }
   }
 
   /**
@@ -378,22 +416,16 @@ class StugnaES {
           toExplainMore: this._toExplainMore
         };
         if (rule.check(this._facts, diagnostics)) {
-          let factNew = new Fact(rule.fact, rule.value, `rule: ${rule.description}`);
-          let factOld = this._facts[rule.fact];
-          if (factOld) {
-            if (factOld.value === factNew.value) {
-              continue; // there are no changes
-            }
-            factOld.history.push(`rule: ${rule.description}`);
-            factNew.history = factOld.history;
-          }
-          factNew.changed = true;
-          this._facts[rule.fact] = factNew;
-          this.eventAdd('rule ok', null, rule.description);
+          this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
           factsChanged++;
         } else {
-          if (this._toExplainMore && diagnostics.missingFact) {
-            this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
+          if (rule.hasElse()) {
+            this._applyFact(rule.factElse, rule.valueElse, 'rule else', rule.description);
+            factsChanged++;
+          } else {
+            if (this._toExplainMore && diagnostics.missingFact) {
+              this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
+            }
           }
         }
       }

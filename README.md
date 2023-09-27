@@ -240,35 +240,35 @@ console.log (rulesAll);
   {
     condition: 'weight > 20000',
     factName: 'transport',
-    valueValue: 'transport',
+    factValue: 'transport',
     priority: 10,
     description: 'Transport with weight more than 20 ton looks like a bus'
   },
   {
     condition: "wheels = 4 AND motor = 'present'",
     factName: 'transport',
-    valueValue: 'transport',
+    factValue: 'transport',
     priority: 10,
     description: 'Transport with engine and 4 wheels is a car'
   },
   {
     condition: "wheels = 2 AND motor = 'present'",
     factName: 'transport',
-    valueValue: 'transport',
+    factValue: 'transport',
     priority: 10,
     description: 'Transport with engine and 2 wheels is a motorcycle'
   },
   {
     condition: "wheels = 4 AND motor = 'missing'",
     factName: 'transport',
-    valueValue: 'transport',
+    factValue: 'transport',
     priority: 10,
     description: 'Transport with 4 wheels and without engine is a skateboard'
   },
   {
     condition: "wheels = 2 AND motor = 'missing'",
     factName: 'transport',
-    valueValue: 'transport',
+    factValue: 'transport',
     priority: 10,
     description: 'Transport with 2 wheels and without engine is a bike'
   }

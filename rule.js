@@ -2,9 +2,15 @@
 
 const {
   ERROR_RULE_CONDITION_EMPTY,
+
   ERROR_RULE_FACT_NAME_EMPTY,
   ERROR_RULE_FACT_NAME_HAS_SPACES,
   ERROR_RULE_FACT_VALUE_EMPTY,
+
+  ERROR_RULE_ELSE_FACT_NAME_HAS_SPACES,
+  ERROR_RULE_ELSE_FACT_NAME_ABSENT,
+  ERROR_RULE_ELSE_FACT_VALUE_ABSENT,
+
   ERROR_RULE_STRING_NO_QUOTE,
   ERROR_RULE_PARENTHESES_1,
   ERROR_RULE_PARENTHESES_2
@@ -19,8 +25,10 @@ const OPERATORS = {
   '*' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value * b.value } },
   '/' :   {priority: 3, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value / b.value } },
 
-  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value < b.value } },
-  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value > b.value } },
+  '<' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value <   b.value } },
+  '<=' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value <=  b.value } },
+  '>' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value >   b.value } },
+  '>=' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value >=  b.value } },
   '=' :   {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value === b.value } },
   '<>' :  {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value !== b.value } },
   'LIKE': {priority: 2, arg_count: 2, left_associativity: 1, calc: function (a, b){ return a.value.toString().indexOf(b.value.toString()) !== -1 } },
@@ -54,19 +62,25 @@ const regexpWhiteSpaces = new RegExp('\\s+', 'g');
  *
  */
 class Rule {
-
   /**
    * @param condition {string}
    * @param factName {string}
    * @param factValue {null|number|string}
    * @param priority {number}
    * @param description {string}
+   * @param factNameElse {string}
+   * @param factValueElse {null|number|string}
    */
-  constructor(condition, factName, factValue, priority, description) {
+  constructor(condition,
+              factName, factValue,
+              priority, description,
+              factNameElse, factValueElse) {
     // init
     this.condition = condition;      // human raw readable text of rule
     this.fact = factName;
     this.value = factValue;
+    this.factElse = factNameElse !== undefined ? factNameElse : null;
+    this.valueElse = factValueElse !== undefined ? factValueElse : null;
     if (priority && priority > 0)
       this.priority = priority;
     else
@@ -125,10 +139,11 @@ class Rule {
   /**
    * Validate rule inputs
    */
-  static validate (condition, fact, value) {
+  static validate (condition, fact, value, factElse, valueElse) {
     if (!condition) {
       return ERROR_RULE_CONDITION_EMPTY;
     }
+
     if (!fact) {
       return ERROR_RULE_FACT_NAME_EMPTY;
     }
@@ -138,7 +153,27 @@ class Rule {
     if (value === null || value === undefined) {
       return ERROR_RULE_FACT_VALUE_EMPTY;
     }
+
+    if (factElse || valueElse) {
+      if (factElse && (valueElse === null || valueElse === undefined)) {
+        return ERROR_RULE_ELSE_FACT_VALUE_ABSENT;
+      }
+      if (valueElse && (factElse === null || factElse === undefined)) {
+        return ERROR_RULE_ELSE_FACT_NAME_ABSENT;
+      }
+      if(regexpWhiteSpaces.test(factElse)) {
+        return ERROR_RULE_ELSE_FACT_NAME_HAS_SPACES;
+      }
+    }
+
     return null;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  hasElse() {
+    return this.factElse != null;
   }
 
   /**
