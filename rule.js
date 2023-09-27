@@ -224,6 +224,8 @@ class Rule {
 
     // preprocess
     raw = raw.replace(/<>/g, '###42@@@'); // protect <> operator from inflation to < >
+    raw = raw.replace(/>=/g, '###43@@@');
+    raw = raw.replace(/<=/g, '###44@@@');
 
     // inflate
     let operators = Object.keys(OPERATORS);
@@ -243,6 +245,8 @@ class Rule {
 
     // postprocess
     raw = raw.replace(/###42@@@/g, '<>'); // back to original notation <>
+    raw = raw.replace(/###43@@@/g, '>=');
+    raw = raw.replace(/###44@@@/g, '<=');
 
     // split
     let parts = raw.split(' ');

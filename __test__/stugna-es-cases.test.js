@@ -1,6 +1,7 @@
 'use strict';
 const {StugnaES} = require("../stugna-es");
 const cases = [
+  //////////////////////////////////////////////////////////////////////////////
   {
     name: "Students in the classroom",
     input: {
@@ -36,6 +37,7 @@ const cases = [
     }
   },
 
+  //////////////////////////////////////////////////////////////////////////////
   {
     name: "What transport am I thinking of?",
     input: {
@@ -82,7 +84,38 @@ const cases = [
         }
       }
     }
-  }
+  },
+
+  //////////////////////////////////////////////////////////////////////////////
+  {
+    name: "It's already noon?",
+    input: {
+      rules: [
+        {
+          condition: "hour < 12",
+          factName: "noon",
+          factValue: "will be",
+          factNameElse: "noon",
+          factValueElse: "passed"
+        }
+      ],
+      facts: [
+        {
+          name: "hour",
+          value: 15,
+          description: "Initial value of hour"
+        }
+      ]
+    },
+    expected: {
+      facts: {
+        noon: {
+          value: "passed",
+          predecessors: ["hour"]
+        }
+      }
+    }
+  },
 ]
 
 describe('StugnaES cases', () => {

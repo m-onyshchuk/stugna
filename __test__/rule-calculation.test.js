@@ -21,8 +21,10 @@ const calculations = [
   { rule: "16 / 2 = 8", result: true, facts: {} },
   { rule: "16 / 0 = 0", result: false, facts: {} },
   { rule: "2 > 1", result: true, facts: {} },
+  { rule: "2 >= 1", result: true, facts: {} },
   { rule: "2.0 > 1", result: true, facts: {} },
   { rule: "2 < 3", result: true, facts: {} },
+  { rule: "2 <= 3", result: true, facts: {} },
   { rule: "2.0 < 3", result: true, facts: {} },
   { rule: "2.0 = 2", result: true, facts: {} },
 

@@ -1,27 +1,11 @@
 'use strict';
-const {StugnaES} = require("./stugna-es");
+const {ruleApply, StugnaES} = require("./stugna-es");
 /**
  * This is a work draft file for local tests
  */
 
-let es = new StugnaES({toExplainMore: true});
-let factsIn = [
-  {
-    name: "factOne",
-    value: 1,
-    description: '',
-  },
-];
-es.factsImport(factsIn);
-
-let rulesIn = [
-  {
-    condition: "factOne = 1 OR factTwo = 1",
-    factValue: "match",
-    factName: "rule",
-  }
-];
-es.rulesImport(rulesIn);
-
-let events = es.eventsAll();
-console.log (events);
+const condition = "2 >= 1";
+const facts = [];
+let [result, error] = ruleApply(condition, facts);
+console.log(result);
+console.log(error);

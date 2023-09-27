@@ -303,6 +303,22 @@ describe('StugnaES methods', () => {
     expect(ruleLast.description).toEqual("second to pass");
   });
 
+  test(`rule defaults`, () => {
+    let es = new StugnaES();
+    let rulesIn = [
+      {
+        condition: "season = 'spring'",
+        factName: "season",
+        factValue: "summer"
+      }
+    ];
+    es.rulesImport(rulesIn);
+    let rulesOut = es.rulesAll();
+    let ruleOne = rulesOut[0];
+    expect(ruleOne.factNameElse).toBeUndefined();
+    expect(ruleOne.factValueElse).toBeUndefined();
+  });
+
   test(`periodic rule detection`, () => {
     let es = new StugnaES();
     es.rulesImport([
