@@ -151,8 +151,12 @@ es.ruleAdd(rule, isTrigger);
   * operators:
     * `>` - greater than operator returns true if the left operand is greater than the right operand, and false 
       otherwise, example: `wheels > 4`
+    * `>=` - greater than or equal operator returns true if the left operand is greater or equal than the right operand, and false
+      otherwise, example: `wheels >= 4`
     * `<` - less than operator returns true if the left operand is less than the right operand, and false otherwise, 
       example: `wheels < 4`
+    * `<=` - less than or equal operator returns true if the left operand is less than or equal the right operand, and false otherwise,
+      example: `wheels <= 4`
     * `=` - equality operator checks whether its two operands are equal, returning a boolean result, equality is strict, 
       example: `motor = 'present'`
     * `<>` - strict inequality operator checks whether its two operands are not equal, returning a boolean result, 
@@ -177,7 +181,7 @@ es.ruleAdd(rule, isTrigger);
   high to low:       
   * `(` `)`
   * `+` `-` `*` `/`
-  * `<` `>` `=` `<>` `LIKE`
+  * `<` `<=` `>` `>=` `=` `<>` `LIKE`
   * `AND` `OR` `NOT`
  
 * factName - name of new fact, which will be added if condition is met. Field must be a string without spaces, mandatory. 
@@ -187,8 +191,12 @@ es.ruleAdd(rule, isTrigger);
   Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
   is undetermined.
 * description - short fact description for logging, string, optional
+* factNameElse - name of new fact, which will be added if condition is not met. Field must be a string without spaces, optional.
+* factValueElse - value of new fact, which will be added if condition is not met. Field can be boolean (`TRUE` or `FALSE`),
+  numerical (`integer` or `float`) or string, optional. 
 * isTrigger - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
+Fields `factNameElse` and `factValueElse` have to be both present or both absent in rule object. 
 
 ### rulesImport
 Import array of rules to the system.

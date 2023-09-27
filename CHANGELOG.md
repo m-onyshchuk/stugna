@@ -1,6 +1,10 @@
 # Changelog
 Changes by versions
 
+## 1.2.1
+* `factNameElse` and `factValueElse` in rule 
+* New `>=` and `<=` operators in rule condition 
+
 ## 1.1.18
 Fixed vulnerabilities in the included packages
 
