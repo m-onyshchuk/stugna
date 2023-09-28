@@ -462,26 +462,31 @@ class Rule {
   }
 
   /**
-   * Calc prepared reverse polish notation in this.calc
    * @param facts
    * @param diagnostics
+   */
+  checkWantedVariables(facts, diagnostics) {
+    for (let variable of this.variables) {
+      if (facts[variable] === undefined) {
+        if (diagnostics && diagnostics.toExplainMore) {
+          diagnostics.missingFact = variable;
+        }
+        return false; // rule variable is absent
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Calc prepared reverse polish notation in this.calc
+   * @param facts
    * @returns {boolean}
    */
-  check (facts, diagnostics) {
+  check (facts) {
     let result = false;
     // let allowConsoleLog = !PROD;
     try {
-      // 1) check wanted variables
-      for (let variable of this.variables) {
-        if (facts[variable] === undefined) {
-          if (diagnostics.toExplainMore) {
-            diagnostics.missingFact = variable;
-          }
-          return false; // rule variable is absent, break rule checking
-        }
-      }
-
-      // 2) calc reverse polish notation
+      // calc reverse polish notation
       let stack = [];
       for (let item of this.calc) {
         let token = Object.assign({}, item);

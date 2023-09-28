@@ -426,6 +426,16 @@ class StugnaES {
         let diagnostics = {
           toExplainMore: this._toExplainMore
         };
+
+        // can check rule?
+        if (!rule.checkWantedVariables(this._facts, diagnostics)) {
+          if (this._toExplainMore && diagnostics.missingFact) {
+            this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
+          }
+          continue;
+        }
+
+        // check rule
         if (rule.check(this._facts, diagnostics)) {
           factsChanged += this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
           finalRuleHappened = (rule.final === 1 || rule.final === 3);
@@ -433,10 +443,6 @@ class StugnaES {
           if (rule.hasElse()) {
             factsChanged += this._applyFact(rule.factElse, rule.valueElse, 'rule else', rule.description);
             finalRuleHappened = (rule.final === 2 || rule.final === 3);
-          } else {
-            if (this._toExplainMore && diagnostics.missingFact) {
-              this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
-            }
           }
         }
 
@@ -489,6 +495,15 @@ function ruleApply(condition, facts) {
   if (rule.error) {
     error = rule.error;
   } else {
+    let diagnostics = {
+      toExplainMore: true
+    };
+
+    if (!rule.checkWantedVariables(factsMap, diagnostics)) {
+      error = `missing fact: ${diagnostics.missingFact}`;
+      return [false, error];
+    }
+
     result = rule.check(factsMap);
     if (rule.error) {
       error = rule.error;
