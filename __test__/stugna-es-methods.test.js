@@ -54,7 +54,7 @@ describe('StugnaES methods', () => {
 
   test(`constructor / explain more`, () => {
     let es = new StugnaES({toExplainMore: true});
-    es.factAdd(  { name: "factOne", value: 1 });
+    es.factAdd(  { name: "factOne", value: 1 }, false);
     es.ruleAdd(      {
       condition: "factOne = 1 OR factTwo = 1",
       factValue: "factThree",

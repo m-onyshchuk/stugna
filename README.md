@@ -62,10 +62,10 @@ let rules = [
 es.rulesImport(rules);
 ```
 Each of these 4 rules contain mandatory fields:
-* condition - a simple logic expression with operators >, <, =, <>, AND, OR, NOT and parentheses
-* factName - a fact's name that will be added to the system if the condition is met. Fact names can be compared to 
+* `condition` - a simple logic expression with operators >, <, =, <>, AND, OR, NOT and parentheses
+* `factName` - a fact's name that will be added to the system if the condition is met. Fact names can be compared to 
   variable names. 
-* factValue - fact's value to add to system in success condition case, i.e. value of variable.
+* `factValue` - fact's value to add to system in success condition case, i.e. value of variable.
 
 Being that simple, our tiny expert system is somewhat useful already. We can ask it what knowledge (facts set) does 
 it need to get info about wanted `transport` fact:
@@ -103,10 +103,10 @@ console.log(factWanted);
 // }
 ```
 Object `factWanted` has the following fields:
-* name - fact name
-* value - fact value
-* history - fact history or changes reason list
-* changed - whether the fact was changed by the rules 
+* `name` - fact name
+* `value` - fact value
+* `history` - fact history or changes reason list
+* `changed` - whether the fact was changed by the rules 
 
 ## StugnaES methods
 The methods of the StugnaES class are described below. 
@@ -122,11 +122,11 @@ let options = {
 };
 let es = new StugnaES(options);
 ```
-* options - object with optional fields:
-  * toSaveEvents - parameter to save various events about facts and rules. Default value is `true`.
-  * toExplainMore - parameter for extended explanation of rule processing. Explanations are saved in the [events log](#eventsall). 
+* `options` - object with optional fields:
+  * `toSaveEvents` - parameter to save various events about facts and rules. Default value is `true`.
+  * `toExplainMore` - parameter for extended explanation of rule processing. Explanations are saved in the [events log](#eventsall). 
     Default value is `false`. 
-  * passCountMax - parameter to limit passing by rules list. Read more in [periodic rules](#periodic-rules). 
+  * `passCountMax` - parameter to limit passing by rules list. Read more in [periodic rules](#periodic-rules). 
     Default value is `16`.    
 
 ### ruleAdd
@@ -142,7 +142,7 @@ let rule = {
 let isTrigger = true;
 es.ruleAdd(rule, isTrigger);
 ```
-* condition - mandatory string field to describe condition for adding new fact to system. 
+* `condition` - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
   * fact names. Each not reserved word without single quotes is labeled as fact name. 
   * boolean values, reserved words `TRUE` or `FALSE`
@@ -184,17 +184,21 @@ es.ruleAdd(rule, isTrigger);
   * `<` `<=` `>` `>=` `=` `<>` `LIKE`
   * `AND` `OR` `NOT`
  
-* factName - name of new fact, which will be added if condition is met. Field must be a string without spaces, mandatory. 
-* factValue - value of new fact, which will be added if condition is met. Field can be boolean (`TRUE` or `FALSE`), 
+* `factName` - name of new fact, which will be added if condition is met. Field must be a string without spaces, mandatory. 
+* `factValue` - value of new fact, which will be added if condition is met. Field can be boolean (`TRUE` or `FALSE`), 
   numerical (`integer` or `float`) or string, mandatory.
-* priority - rule priority, number, optional, default value is `1`. All rules are processing by order with priority.
+* `priority` - rule priority, number, optional, default value is `1`. All rules are processing by order with priority.
   Rules with small priority are processing first, with big priority - last. Order of rule processing with same priority 
   is undetermined.
-* description - short fact description for logging, string, optional
-* factNameElse - name of new fact, which will be added if condition is not met. Field must be a string without spaces, optional.
-* factValueElse - value of new fact, which will be added if condition is not met. Field can be boolean (`TRUE` or `FALSE`),
+* `description` - short fact description for logging, string, optional
+* `factNameElse` - name of new fact, which will be added if condition is not met. Field must be a string without spaces, optional.
+* `factValueElse` - value of new fact, which will be added if condition is not met. Field can be boolean (`TRUE` or `FALSE`),
   numerical (`integer` or `float`) or string, optional. 
-* isTrigger - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
+* `final` - optional number field with valid values 1, 2 or 3 to stop next rules processing. By values:
+  * 1 - stop processing the following rules in case of rule condition met
+  * 2 - stop processing the following rules if the rule condition is not met and field factNameElse is present
+  * 3 - stop processing the following rules in any case
+* `isTrigger` - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 Fields `factNameElse` and `factValueElse` have to be both present or both absent in rule object. 
 

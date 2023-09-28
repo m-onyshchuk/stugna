@@ -292,26 +292,30 @@ class StugnaES {
    * @param description {string}
    * @param factNameElse {string}
    * @param factValueElse {string}
+   * @param final {number}
    * @param isTrigger {boolean}
    */
   ruleAdd({ condition,
             factName, factValue,
             priority, description,
             factNameElse, factValueElse,
+            final
           }, isTrigger = true) {
     let ruleError = Rule.validate(condition, factName, factValue, factNameElse, factValueElse);
-    if (!description) {
-      description = `${condition} / ${factName} / ${factValue}`
-    }
     if (ruleError) {
+
       this.eventAdd('rule error', ruleError, description); // validation errors
       return;
     }
 
-    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse);
+    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse, final);
     ruleError = rule.getError();
     if (ruleError) {
-      this.eventAdd('rule error', ruleError, description); // parsing errors
+      let subject = rule.description;
+      if (!subject) {
+        subject = Rule.createDescription(rule.condition, rule.factName, rule.factValue, rule.factNameElse, rule.factValueElse);
+      }
+      this.eventAdd('rule error', ruleError, subject); // parsing errors
       return
     }
 
@@ -319,7 +323,7 @@ class StugnaES {
     this._rules.sort((a, b) => {
       return a.priority - b.priority; // by priority ASC
     });
-    this.eventAdd('rule add', null, description);
+    this.eventAdd('rule add', null, rule.description);
     if (isTrigger) {
       this._order();
     }
@@ -332,11 +336,11 @@ class StugnaES {
   rulesImport(rules, isTrigger = true) {
     for (let rule of rules) {
       let ruleError = Rule.validate(rule.condition, rule.factName, rule.factValue, rule.factNameElse, rule.factValueElse);
-      let subject = rule.description;
-      if (!subject) {
-        subject = `${rule.condition} / ${rule.factName} / ${rule.factValue}`
-      }
       if (ruleError) {
+        let subject = rule.description;
+        if (!subject) {
+          subject = Rule.createDescription(rule.condition, rule.factName, rule.factValue, rule.factNameElse, rule.factValueElse);
+        }
         this.eventAdd('rule error', ruleError, subject);
         continue;
       }
@@ -362,7 +366,8 @@ class StugnaES {
         factNameElse: rule.factElse,
         factValueElse: rule.valueElse,
         priority: rule.priority,
-        description: rule.description
+        description: rule.description,
+        final: rule.final
       }
       // if (item.factNameElse === null) {
       //   delete item.factNameElse;
@@ -413,6 +418,7 @@ class StugnaES {
   _order () {
     this._factsAreOrdered = false;
     let passCount = 1;
+    let finalRuleHappened = false;
     while (passCount <= this._passCountMax) {
       // one pass - check all rules
       let factsChanged = 0;
@@ -422,23 +428,36 @@ class StugnaES {
         };
         if (rule.check(this._facts, diagnostics)) {
           factsChanged += this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
+          finalRuleHappened = (rule.final === 1 || rule.final === 3);
         } else {
           if (rule.hasElse()) {
             factsChanged += this._applyFact(rule.factElse, rule.valueElse, 'rule else', rule.description);
+            finalRuleHappened = (rule.final === 2 || rule.final === 3);
           } else {
             if (this._toExplainMore && diagnostics.missingFact) {
               this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
             }
           }
         }
+
+        if (finalRuleHappened) {
+          this.eventAdd('rule final', `Final rule happened`);
+          break;
+        }
       }
-      
+
+      this.eventAdd('rules passed', `Rules pass count is ${passCount}`);
+
       if (!factsChanged) {
         this._factsAreOrdered = true;
         break;
       }
-        
-      this.eventAdd('rules passed', `Rules pass count is ${passCount}`);
+
+      if (finalRuleHappened) {
+        this._factsAreOrdered = true;
+        break;
+      }
+
       passCount++;
     }
 

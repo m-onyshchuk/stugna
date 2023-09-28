@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.0
+* `final` field in rule
+
 ## 1.2.1
 * `factNameElse` and `factValueElse` in rule 
 * New `>=` and `<=` operators in rule condition 

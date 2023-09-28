@@ -70,11 +70,13 @@ class Rule {
    * @param description {string}
    * @param factNameElse {string}
    * @param factValueElse {null|number|string}
+   * @param final {number}
    */
   constructor(condition,
               factName, factValue,
               priority, description,
-              factNameElse, factValueElse) {
+              factNameElse, factValueElse,
+              final) {
     // init
     this.condition = condition;      // human raw readable text of rule
     this.fact = factName;
@@ -88,7 +90,11 @@ class Rule {
     if (description)
       this.description = description; // detailed rule description
     else
-      this.description = `${condition} / ${factName} / ${factValue}`;
+      this.description = Rule.createDescription(condition, factName, factValue, factNameElse, factValueElse);
+    if (final && final >= 1 && final <= 3)
+      this.final = final;
+    else
+      this.final = null;
     this.error = null;               // rule error
     this.tokens = [];                // parsed rule tokens
     this.calc = [];                  // reverse polish notation for rule condition calculation
@@ -97,6 +103,24 @@ class Rule {
     this._tokenize(condition);
     this._parse();
     this._collectVariables();
+  }
+
+  /**
+   *
+   * @param condition
+   * @param factName
+   * @param factValue
+   * @param factElse
+   * @param factNameElse
+   * @param factValueElse
+   * @returns {string}
+   */
+  static createDescription(condition, factName, factValue, factElse, factNameElse, factValueElse) {
+    let postfix = '';
+    if (factNameElse) {
+      postfix = ` / {${factNameElse}: ${factValueElse}}`;
+    }
+    return `${condition} / {${factName}: ${factValue}}${postfix}`;
   }
 
   /**

@@ -1,7 +1,6 @@
 'use strict';
 /**
- * Extended example for periodic rules
- * Three pass period
+ * Rule example with Else branch
  */
 
 // const {StugnaES} = require("stugna-es"); // for standalone run
