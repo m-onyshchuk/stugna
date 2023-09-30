@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.2
+* `precondition` field in rule, draft (no documentation) 
+
 ## 1.3.0
 * `final` field in rule
 

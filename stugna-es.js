@@ -293,22 +293,22 @@ class StugnaES {
    * @param factNameElse {string}
    * @param factValueElse {string}
    * @param final {number}
+   * @param precondition {string}
    * @param isTrigger {boolean}
    */
   ruleAdd({ condition,
             factName, factValue,
             priority, description,
             factNameElse, factValueElse,
-            final
+            final, precondition
           }, isTrigger = true) {
     let ruleError = Rule.validate(condition, factName, factValue, factNameElse, factValueElse);
     if (ruleError) {
-
       this.eventAdd('rule error', ruleError, description); // validation errors
       return;
     }
 
-    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse, final);
+    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse, final, precondition);
     ruleError = rule.getError();
     if (ruleError) {
       let subject = rule.description;
@@ -427,16 +427,35 @@ class StugnaES {
           toExplainMore: this._toExplainMore
         };
 
-        // can check rule?
-        if (!rule.checkWantedVariables(this._facts, diagnostics)) {
+        // precondition
+        if (rule.hasPrecondition()) {
+          // check precondition variables
+          if (!rule.checkWantedVariables(rule.prevariables, this._facts, diagnostics)) {
+            if (this._toExplainMore && diagnostics.missingFact) {
+              this.eventAdd('rule skip', `missing fact in precondition: ${diagnostics.missingFact};`, rule.description);
+            }
+            continue;
+          }
+
+          // check precondition
+          if (rule.check(this._facts, rule.precalc, true)) {
+            if (this._toExplainMore) {
+              this.eventAdd('rule skip', `precondition not met`, rule.description);
+            }
+            continue;
+          }
+        }
+
+        // check condition variables
+        if (!rule.checkWantedVariables(rule.variables, this._facts, diagnostics)) {
           if (this._toExplainMore && diagnostics.missingFact) {
-            this.eventAdd('rule skip', `pass: ${passCount}; missing fact: ${diagnostics.missingFact};`, rule.description);
+            this.eventAdd('rule skip', `missing fact in condition: ${diagnostics.missingFact};`, rule.description);
           }
           continue;
         }
 
-        // check rule
-        if (rule.check(this._facts, diagnostics)) {
+        // check condition
+        if (rule.check(this._facts, rule.calc, false)) {
           factsChanged += this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
           finalRuleHappened = (rule.final === 1 || rule.final === 3);
         } else {
@@ -499,12 +518,12 @@ function ruleApply(condition, facts) {
       toExplainMore: true
     };
 
-    if (!rule.checkWantedVariables(factsMap, diagnostics)) {
+    if (!rule.checkWantedVariables(rule.variables, factsMap, diagnostics)) {
       error = `missing fact: ${diagnostics.missingFact}`;
       return [false, error];
     }
 
-    result = rule.check(factsMap);
+    result = rule.check(factsMap, rule.calc, false);
     if (rule.error) {
       error = rule.error;
     }

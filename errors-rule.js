@@ -10,9 +10,9 @@ const ERROR_RULE_ELSE_FACT_NAME_HAS_SPACES = 'factValueElse cannot contain space
 const ERROR_RULE_ELSE_FACT_NAME_ABSENT = 'If you use factValueElse you have to fill factNameElse';
 const ERROR_RULE_ELSE_FACT_VALUE_ABSENT = 'If you use factNameElse you have to fill factValueElse';
 
-const ERROR_RULE_STRING_NO_QUOTE = "There is no ' to close string value";
-const ERROR_RULE_PARENTHESES_1 = 'Parentheses mismatched (1)';
-const ERROR_RULE_PARENTHESES_2 = 'Parentheses mismatched (2)';
+const ERROR_RULE_STRING_NO_QUOTE = "there is no ' to close string value";
+const ERROR_RULE_PARENTHESES_1 = 'parentheses mismatched (1)';
+const ERROR_RULE_PARENTHESES_2 = 'parentheses mismatched (2)';
 
 module.exports = {
   ERROR_RULE_CONDITION_EMPTY,

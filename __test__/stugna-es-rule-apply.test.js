@@ -18,7 +18,7 @@ describe('Function ruleApply', () => {
     const facts = [{name:"animal", value:"cat"}];
     let [result, error] = ruleApply(condition, facts);
     expect(result).toEqual(false);
-    expect(error).toEqual(ERROR_RULE_PARENTHESES_1);
+    expect(error).toContain(ERROR_RULE_PARENTHESES_1);
   });
 
   test(`case error 2`, () => {

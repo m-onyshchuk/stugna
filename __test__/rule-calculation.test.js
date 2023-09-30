@@ -63,7 +63,7 @@ describe('Rule calculation', () => {
   for (let item of calculations) {
     test(`condition: ${item.rule}`, () => {
       let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');
-      let result = rule.check(item.facts);
+      let result = rule.check(item.facts, rule.calc, false);
       expect(item.result).toEqual(result);
     });
   }

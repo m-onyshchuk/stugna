@@ -65,20 +65,22 @@ class Rule {
   /**
    * @param condition {string}
    * @param factName {string}
-   * @param factValue {null|number|string}
+   * @param factValue {number|string|null}
    * @param priority {number}
    * @param description {string}
    * @param factNameElse {string}
-   * @param factValueElse {null|number|string}
-   * @param final {number}
+   * @param factValueElse {number|string|undefined}
+   * @param final {number|undefined}
+   * @param precondition {string|null|undefined}
    */
   constructor(condition,
               factName, factValue,
               priority, description,
               factNameElse, factValueElse,
-              final) {
+              final, precondition) {
     // init
-    this.condition = condition;      // human raw readable text of rule
+    this.condition = condition;       // human raw readable text of rule
+    this.precondition = precondition !== null && precondition !== undefined ? precondition : null; // human raw readable text of precondition
     this.fact = factName;
     this.value = factValue;
     this.factElse = factNameElse !== undefined ? factNameElse : null;
@@ -95,14 +97,29 @@ class Rule {
       this.final = final;
     else
       this.final = null;
-    this.error = null;               // rule error
-    this.tokens = [];                // parsed rule tokens
-    this.calc = [];                  // reverse polish notation for rule condition calculation
-    this.variables = [];             // variables list from condition
+    this.error = null;                // rule error
 
-    [this.tokens, this.error] = this._tokenize(condition);
+    this.precalc = [];                // reverse polish notation for rule precondition calculation
+    this.prevariables = [];           // variables list from precondition
+    this.calc = [];                   // reverse polish notation for rule condition calculation
+    this.variables = [];              // variables list from condition
+    let tokens = [];                  // parsed rule tokens
+
+    // precondition
+    if (this.precondition !== null) {
+      [tokens, this.error] = this._tokenize(this.precondition, 'Precondition');
+      if (this.error === null) {
+        [this.precalc, this.error] = this._parse(tokens, 'Precondition');
+        if (this.error === null) {
+          this.prevariables = this._collectVariables(this.precalc);
+        }
+      }
+    }
+
+    // condition
+    [tokens, this.error] = this._tokenize(condition, 'Condition');
     if (this.error === null) {
-      [this.calc, this.error] = this._parse(this.tokens);
+      [this.calc, this.error] = this._parse(tokens, 'Condition');
       if (this.error === null) {
         this.variables = this._collectVariables(this.calc);
       }
@@ -119,7 +136,7 @@ class Rule {
    * @param factValueElse
    * @returns {string}
    */
-  static createDescription(condition, factName, factValue, factElse, factNameElse, factValueElse) {
+  static createDescription(condition, factName, factValue, factNameElse, factValueElse) {
     let postfix = '';
     if (factNameElse) {
       postfix = ` / {${factNameElse}: ${factValueElse}}`;
@@ -246,10 +263,11 @@ class Rule {
   /**
    * Lexical analysis
    * @param raw {string}
+   * @param errorSource {string}
    * @returns {*[][]}
    * @private
    */
-  _tokenize(raw) {
+  _tokenize(raw, errorSource) {
     let tokens = []
     let error = null;
 
@@ -342,7 +360,7 @@ class Rule {
     }
 
     if (inStr) {
-      error = ERROR_RULE_STRING_NO_QUOTE;
+      error = `${errorSource}: ${ERROR_RULE_STRING_NO_QUOTE}`;
       return [tokens, error];
     }
 
@@ -356,10 +374,11 @@ class Rule {
    * https://en.wikipedia.org/wiki/Shunting_yard_algorithm
    *
    * @param tokens {*[]}
+   * @param errorSource {string}
    * @returns {*[][]|(*[]|string)[]}
    * @private
    */
-  _parse(tokens) {
+  _parse(tokens, errorSource) {
     let error = null;
     let output = [];
     let stack = [];
@@ -410,7 +429,7 @@ class Rule {
               }
             }
             if (!pe) {
-              error = ERROR_RULE_PARENTHESES_1;
+              error = `${errorSource}: ${ERROR_RULE_PARENTHESES_1}`;
               return [[], error];
             }
             stack.pop();
@@ -423,7 +442,7 @@ class Rule {
     while(stack.length) {
       let operatorTop = stack[stack.length-1];
       if(operatorTop.value === '(' || operatorTop.value === ')') {
-        error = ERROR_RULE_PARENTHESES_2;
+        error = `${errorSource}: ${ERROR_RULE_PARENTHESES_2}`;
         return [[], error];
       }
       output.push(operatorTop);
@@ -457,21 +476,40 @@ class Rule {
   }
 
   /**
-   * Get prepared reverse polish notation from this.calc
+   * Has rule precondition?
+   * @returns {boolean}
+   */
+  hasPrecondition() {
+    return this.precalc.length > 0;
+  }
+
+  /**
+   * Get prepared reverse polish notation from this.precalc
    * @returns {string}
    */
-  getCalcString() {
+  getPreconditionCalcString() {
     let str = '';
     str = this.calc.map(token => token.value).join(' ');
     return str;
   }
 
   /**
+   * Get prepared reverse polish notation from this.calc
+   * @returns {string}
+   */
+  getConditionCalcString() {
+    let str = '';
+    str = this.calc.map(token => token.value).join(' ');
+    return str;
+  }
+
+  /**
+   * @param variables
    * @param facts
    * @param diagnostics
    */
-  checkWantedVariables(facts, diagnostics) {
-    for (let variable of this.variables) {
+  checkWantedVariables(variables, facts, diagnostics) {
+    for (let variable of variables) {
       if (facts[variable] === undefined) {
         if (diagnostics && diagnostics.toExplainMore) {
           diagnostics.missingFact = variable;
@@ -483,11 +521,13 @@ class Rule {
   }
 
   /**
-   * Calc prepared reverse polish notation in this.calc
+   * Calc prepared reverse polish notation in calc
    * @param facts
+   * @param calc
+   * @param isPrecondition
    * @returns {boolean}
    */
-  check (facts) {
+  check (facts, calc, isPrecondition) {
     let result = false;
     // let allowConsoleLog = !PROD;
     try {
@@ -537,13 +577,15 @@ class Rule {
         result = stack[0].value;
       } else {
         // error
-        this.error = `rule: ${this.condition}; error: calc failed (${JSON.stringify(stack)})`;
+        let conditionStr = isPrecondition ? this.precondition : this.condition;
+        this.error = `rule: ${conditionStr}; error: calc failed (${JSON.stringify(stack)})`;
         // if (allowConsoleLog) {
         //   console.error(this.error);
         // }
       }
     } catch (error) {
-      this.error = `rule: ${this.condition}; error in condition`;
+      let conditionStr = isPrecondition ? this.precondition : this.condition;
+      this.error = `rule: ${conditionStr}; error in condition`;
       // if (allowConsoleLog) {
       //   this.error = `rule: ${this.condition}; error: ${error.message};`;
       //   console.error(this.error);
