@@ -98,11 +98,15 @@ class Rule {
     this.error = null;               // rule error
     this.tokens = [];                // parsed rule tokens
     this.calc = [];                  // reverse polish notation for rule condition calculation
-    this.variables = [];             // variables list from rule
+    this.variables = [];             // variables list from condition
 
-    this._tokenize(condition);
-    this._parse();
-    this._collectVariables();
+    [this.tokens, this.error] = this._tokenize(condition);
+    if (this.error === null) {
+      [this.calc, this.error] = this._parse(this.tokens);
+      if (this.error === null) {
+        this.variables = this._collectVariables(this.calc);
+      }
+    }
   }
 
   /**
@@ -242,9 +246,12 @@ class Rule {
   /**
    * Lexical analysis
    * @param raw {string}
+   * @returns {*[][]}
+   * @private
    */
   _tokenize(raw) {
-    let tokens = [];
+    let tokens = []
+    let error = null;
 
     // preprocess
     raw = raw.replace(/<>/g, '###42@@@'); // protect <> operator from inflation to < >
@@ -335,27 +342,28 @@ class Rule {
     }
 
     if (inStr) {
-      this.error = ERROR_RULE_STRING_NO_QUOTE;
-      return;
+      error = ERROR_RULE_STRING_NO_QUOTE;
+      return [tokens, error];
     }
 
     tokens = this.checkUnaryMinus(tokens);
 
-    this.tokens = tokens;
+    return [tokens, error];
   }
 
   /**
    * Shunting yard algorithm - converting infix notation to reverse polish notation
    * https://en.wikipedia.org/wiki/Shunting_yard_algorithm
+   *
+   * @param tokens {*[]}
+   * @returns {*[][]|(*[]|string)[]}
+   * @private
    */
-  _parse() {
-    if (this.error) {
-      return;
-    }
-
+  _parse(tokens) {
+    let error = null;
     let output = [];
     let stack = [];
-    for (let token of this.tokens) {
+    for (let token of tokens) {
       switch (token.type) {
         case TOKEN_BOOLEAN:
         case TOKEN_NUMBER:
@@ -402,8 +410,8 @@ class Rule {
               }
             }
             if (!pe) {
-              this.error = ERROR_RULE_PARENTHESES_1;
-              return;
+              error = ERROR_RULE_PARENTHESES_1;
+              return [[], error];
             }
             stack.pop();
           }
@@ -415,33 +423,30 @@ class Rule {
     while(stack.length) {
       let operatorTop = stack[stack.length-1];
       if(operatorTop.value === '(' || operatorTop.value === ')') {
-        this.error = ERROR_RULE_PARENTHESES_2;
-        return;
+        error = ERROR_RULE_PARENTHESES_2;
+        return [[], error];
       }
       output.push(operatorTop);
       stack.pop();
     }
 
-    this.calc = output;
+    return [output, null];
   }
 
   /**
    * Collect variable names from parsed reverse polish notation
    */
-  _collectVariables() {
-    if (this.error) {
-      return;
-    }
-
-    this.variables = [];
-    for (let token of this.calc) {
+  _collectVariables(calc) {
+    let variables = [];
+    for (let token of calc) {
       if (token.type === TOKEN_VARIABLE) {
-        let exist = this.variables.includes(token.value);
+        let exist = variables.includes(token.value);
         if (!exist) {
-          this.variables.push(token.value);
+          variables.push(token.value);
         }
       }
     }
+    return variables;
   }
 
   /**
