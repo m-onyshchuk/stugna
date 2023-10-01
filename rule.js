@@ -72,12 +72,13 @@ class Rule {
    * @param factValueElse {number|string|undefined}
    * @param final {number|undefined}
    * @param precondition {string|null|undefined}
+   * @param missing {number|string|null}
    */
   constructor(condition,
               factName, factValue,
               priority, description,
               factNameElse, factValueElse,
-              final, precondition) {
+              final, precondition, missing) {
     // init
     this.condition = condition;       // human raw readable text of rule
     this.precondition = precondition !== null && precondition !== undefined ? precondition : null; // human raw readable text of precondition
@@ -97,6 +98,7 @@ class Rule {
       this.final = final;
     else
       this.final = null;
+    this.missing = missing !== undefined ? missing : null;
     this.error = null;                // rule error
 
     this.precalc = [];                // reverse polish notation for rule precondition calculation
@@ -505,19 +507,18 @@ class Rule {
 
   /**
    * @param variables
-   * @param facts
-   * @param diagnostics
+   * @param factsExisting
+   * @param factsMissing
    */
-  checkWantedVariables(variables, facts, diagnostics) {
+  checkWantedVariables(variables, factsExisting, factsMissing) {
+    let result = true;
     for (let variable of variables) {
-      if (facts[variable] === undefined) {
-        if (diagnostics && diagnostics.toExplainMore) {
-          diagnostics.missingFact = variable;
-        }
-        return false; // rule variable is absent
+      if (factsExisting[variable] === undefined) {
+        factsMissing.push(variable);
+        result = false; // rule variable is absent
       }
     }
-    return true;
+    return result;
   }
 
   /**

@@ -294,13 +294,14 @@ class StugnaES {
    * @param factValueElse {string}
    * @param final {number}
    * @param precondition {string}
+   * @param missing {number|string|null}
    * @param isTrigger {boolean}
    */
   ruleAdd({ condition,
             factName, factValue,
             priority, description,
             factNameElse, factValueElse,
-            final, precondition
+            final, precondition, missing
           }, isTrigger = true) {
     let ruleError = Rule.validate(condition, factName, factValue, factNameElse, factValueElse);
     if (ruleError) {
@@ -308,7 +309,7 @@ class StugnaES {
       return;
     }
 
-    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse, final, precondition);
+    let rule = new Rule(condition, factName, factValue, priority, description, factNameElse, factValueElse, final, precondition, missing);
     ruleError = rule.getError();
     if (ruleError) {
       let subject = rule.description;
@@ -413,6 +414,33 @@ class StugnaES {
   }
 
   /**
+   * @param obj
+   * @returns {any}
+   * @private
+   */
+  _deepCopy(obj) {
+    const str = JSON.stringify(obj);
+    return JSON.parse(str);
+  }
+
+  /**
+   * Fix missing facts by default values into temp map
+   * @param factsExisting
+   * @param factsMissing
+   * @param defaultValue
+   * @returns {*}
+   * @private
+   */
+  _fixFactsMissing(factsExisting, factsMissing, defaultValue) {
+    let factsTmp = this._deepCopy(factsExisting);
+    for (let factName of factsMissing) {
+      const fact = new Fact(factName, defaultValue, '');
+      factsTmp[factName] = fact;
+    }
+    return factsTmp;
+  }
+
+  /**
    * Regularize all rules and facts
    */
   _order () {
@@ -423,16 +451,14 @@ class StugnaES {
       // one pass - check all rules
       let factsChanged = 0;
       for (let rule of this._rules) {
-        let diagnostics = {
-          toExplainMore: this._toExplainMore
-        };
+        let factsMissing = [];
 
         // precondition
         if (rule.hasPrecondition()) {
           // check precondition variables
-          if (!rule.checkWantedVariables(rule.prevariables, this._facts, diagnostics)) {
-            if (this._toExplainMore && diagnostics.missingFact) {
-              this.eventAdd('rule skip', `missing fact in precondition: ${diagnostics.missingFact};`, rule.description);
+          if (!rule.checkWantedVariables(rule.prevariables, this._facts, factsMissing)) {
+            if (this._toExplainMore) {
+              this.eventAdd('rule skip', `missing facts in precondition: ${factsMissing.join(', ')};`, rule.description);
             }
             continue;
           }
@@ -447,15 +473,21 @@ class StugnaES {
         }
 
         // check condition variables
-        if (!rule.checkWantedVariables(rule.variables, this._facts, diagnostics)) {
-          if (this._toExplainMore && diagnostics.missingFact) {
-            this.eventAdd('rule skip', `missing fact in condition: ${diagnostics.missingFact};`, rule.description);
+        let factsAll = this._facts;
+        factsMissing = [];
+        if (!rule.checkWantedVariables(rule.variables, this._facts, factsMissing)) {
+          if (rule.missing === null) {
+            if (this._toExplainMore) {
+              this.eventAdd('rule skip', `missing fact in condition: ${factsMissing.join(', ')};`, rule.description);
+            }
+            continue;
+          } else {
+            factsAll = this._fixFactsMissing(this._facts, factsMissing, rule.missing);
           }
-          continue;
         }
 
         // check condition
-        if (rule.check(this._facts, rule.calc, false)) {
+        if (rule.check(factsAll, rule.calc, false)) {
           factsChanged += this._applyFact(rule.fact, rule.value, 'rule ok', rule.description);
           finalRuleHappened = (rule.final === 1 || rule.final === 3);
         } else {
@@ -514,12 +546,9 @@ function ruleApply(condition, facts) {
   if (rule.error) {
     error = rule.error;
   } else {
-    let diagnostics = {
-      toExplainMore: true
-    };
-
-    if (!rule.checkWantedVariables(rule.variables, factsMap, diagnostics)) {
-      error = `missing fact: ${diagnostics.missingFact}`;
+    let factsMissing = [];
+    if (!rule.checkWantedVariables(rule.variables, factsMap, factsMissing)) {
+      error = `missing facts: ${factsMissing.join(', ')}`;
       return [false, error];
     }
 
