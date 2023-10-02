@@ -194,10 +194,11 @@ es.ruleAdd(rule, isTrigger);
 * `factNameElse` - name of new fact, which will be added if condition is not met. Field must be a string without spaces, optional.
 * `factValueElse` - value of new fact, which will be added if condition is not met. Field can be boolean (`TRUE` or `FALSE`),
   numerical (`integer` or `float`) or string, optional. 
-* `final` - optional number field with valid values 1, 2 or 3 to stop next rules processing. By values:
-  * 1 - stop processing the following rules in case of rule condition met
-  * 2 - stop processing the following rules if the rule condition is not met and field factNameElse is present
-  * 3 - stop processing the following rules in any case
+* `final` - This is an optional numerical field in a rule that can have one of three values: 1, 2, or 3. 
+  Each value dictates when to halt the evaluation of subsequent rules:
+  * 1 - stop evaluating the next rules if the current rule's condition is met.
+  * 2 - stop evaluating the next rules if the current rule's condition is not met and the field factNameElse exists.
+  * 3 - stop evaluating the next rules, regardless of any conditions.
 * `isTrigger` - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 Fields `factNameElse` and `factValueElse` have to be both present or both absent in rule object. 
@@ -238,8 +239,8 @@ let rules = [
 let isTrigger = true;
 es.rulesImport(rules, isTrigger);
 ```
-* rules - array of objects with fields like in [ruleAdd](#ruleadd) method
-* isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
+* `rules` - array of objects with fields like in [ruleAdd](#ruleadd) method
+* `isTrigger` - if true, after import, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
 ### rulesAll
@@ -305,10 +306,10 @@ let fact = {
 let isTrigger = true;
 es.factAdd(fact, isTrigger);
 ```
-* name - fact name, string, mandatory. Fact name can`t contains spaces. 
-* value - fact value, numerical or string, mandatory
-* description - short fact description for logging, string, optional
-* isTrigger - if true, after new fact adding, rules check procedure starts automatically to generate new possible
+* `name` - fact name, string, mandatory. Fact name can`t contains spaces. 
+* `value` - fact value, numerical or string, mandatory
+* `description` - short fact description for logging, string, optional
+* `isTrigger` - if true, after new fact adding, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true` 
 
 ### factsImport
@@ -329,8 +330,8 @@ let facts = [
 let isTrigger = true;
 es.factsImport(facts, isTrigger);
 ```
-* facts - array of objects with fields like in [factAdd](#factadd) method
-* isTrigger - if true, after import, rules check procedure starts automatically to generate new possible
+* `facts` - array of objects with fields like in [factAdd](#factadd) method
+* `isTrigger` - if true, after import, rules check procedure starts automatically to generate new possible
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 
 ### factsAllAsArray
@@ -385,8 +386,8 @@ let isKnown = es.factIsKnown(name);
 console.log (isKnown);
 // true
 ```
-* name - fact name, string, mandatory
-* return value - boolean
+* `name` - fact name, string, mandatory
+* return value - `boolean`
 
 ### factGet
 Returns fact by the name.
@@ -406,10 +407,10 @@ console.log (fact);
 }
 */
 ```
-* name - fact name, string, mandatory
-* value - fact value, number or string
-* history - fact changes history by rules
-* changed - whether the fact was changed by the rules
+* `name` - fact name, string, mandatory
+* `value` - fact value, number or string
+* `history` - fact changes history by rules
+* `changed` - whether the fact was changed by the rules
 
 ### factGetPredecessorsWanted
 Returns all fact names which may be needed to determine asked fact.
@@ -419,7 +420,7 @@ let wanted = es.factGetPredecessorsWanted(name);
 console.log (wanted);
 // [ 'weight', 'wheels', 'motor' ]
 ```
-* name - fact name for which it is necessary to find predecessors, string, mandatory
+* `name` - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
 
 ### factGetPredecessorsUnknown
@@ -431,7 +432,7 @@ let unknown = es.factGetPredecessorsUnknown(name);
 console.log (unknown);
 // [ 'weight' ]
 ```
-* name - fact name for which it is necessary to find predecessors, string, mandatory
+* `name` - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
 
 ### factsAreOrdered

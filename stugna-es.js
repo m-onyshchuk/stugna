@@ -464,7 +464,7 @@ class StugnaES {
           }
 
           // check precondition
-          if (rule.check(this._facts, rule.precalc, true)) {
+          if (!rule.check(this._facts, rule.precalc, true)) {
             if (this._toExplainMore) {
               this.eventAdd('rule skip', `precondition not met`, rule.description);
             }
