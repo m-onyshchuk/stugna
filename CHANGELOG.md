@@ -1,8 +1,11 @@
 # Changelog
 Changes by versions
 
+## 1.3.5
+* Rule.check bug fix
+
 ## 1.3.4
-* precondition bug fix
+* Rule.precondition bug fix
 
 ## 1.3.3
 * `missing` field in rule, draft (no documentation)

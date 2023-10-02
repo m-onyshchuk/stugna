@@ -534,7 +534,7 @@ class Rule {
     try {
       // calc reverse polish notation
       let stack = [];
-      for (let item of this.calc) {
+      for (let item of calc) {
         let token = Object.assign({}, item);
         switch (token.type) {
           case TOKEN_BOOLEAN:
