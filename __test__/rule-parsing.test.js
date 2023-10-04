@@ -66,7 +66,6 @@ describe('Rule parsing', () => {
         let rule = new Rule('TRUE', 'fact-name', 'fact-value', 10, 'description',
           null, null, null, item.rule);
         expect(item.calc).toEqual(rule.getPreconditionCalcString());
-        console.log("--- item ---", item);
         let error = null;
         if (item.error) {
           error = `Precondition: ${item.error}`;
