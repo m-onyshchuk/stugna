@@ -119,11 +119,13 @@ class Rule {
     }
 
     // condition
-    [tokens, this.error] = this._tokenize(condition, 'Condition');
     if (this.error === null) {
-      [this.calc, this.error] = this._parse(tokens, 'Condition');
+      [tokens, this.error] = this._tokenize(condition, 'Condition');
       if (this.error === null) {
-        this.variables = this._collectVariables(this.calc);
+        [this.calc, this.error] = this._parse(tokens, 'Condition');
+        if (this.error === null) {
+          this.variables = this._collectVariables(this.calc);
+        }
       }
     }
   }
@@ -491,7 +493,7 @@ class Rule {
    */
   getPreconditionCalcString() {
     let str = '';
-    str = this.calc.map(token => token.value).join(' ');
+    str = this.precalc.map(token => token.value).join(' ');
     return str;
   }
 

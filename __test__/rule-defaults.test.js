@@ -16,10 +16,15 @@ describe('Rule default fields', () => {
     const description = 'description';
     const factNameElse = 'factNameElse';
     const factValueElse = 'factValueElse';
-    let rule = new Rule('1=1', 'a', 'b', priority, description, factNameElse, factValueElse);
+    const final=1;
+    const precondition='x=1';
+    let rule = new Rule('1=1', 'a', 'b',
+      priority, description, factNameElse, factValueElse,
+      final, precondition);
     expect(rule.priority).toEqual(priority);
     expect(rule.description).toEqual(description);
     expect(rule.factElse).toEqual(factNameElse);
     expect(rule.valueElse).toEqual(factValueElse);
+    expect(rule.final).toEqual(final);
   });
 })

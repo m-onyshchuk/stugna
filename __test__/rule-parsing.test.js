@@ -53,8 +53,25 @@ describe('Rule parsing', () => {
       test(`condition: ${item.rule}`, () => {
         let rule = new Rule(item.rule, 'fact-name', 'fact-value', 10, 'description');
         expect(item.calc).toEqual(rule.getConditionCalcString());
-        // TODO: add precondition
-        // expect(item.error).toEqual(rule.getError());
+        let error = null;
+        if (item.error) {
+          error = `Condition: ${item.error}`;
+        }
+        expect(error).toEqual(rule.getError());
+      });
+    }
+
+    for (let item of parsing) {
+      test(`precondition: ${item.rule}`, () => {
+        let rule = new Rule('TRUE', 'fact-name', 'fact-value', 10, 'description',
+          null, null, null, item.rule);
+        expect(item.calc).toEqual(rule.getPreconditionCalcString());
+        console.log("--- item ---", item);
+        let error = null;
+        if (item.error) {
+          error = `Precondition: ${item.error}`;
+        }
+        expect(error).toEqual(rule.getError());
       });
     }
 })
