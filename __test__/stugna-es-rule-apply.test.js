@@ -13,7 +13,7 @@ describe('Function ruleApply', () => {
     expect(error).toEqual(null);
   });
 
-  test(`case error 1`, () => {
+  test(`case error / condition / parsing`, () => {
     const condition = "animal = 'monkey')";
     const facts = [{name:"animal", value:"cat"}];
     let [result, error] = ruleApply(condition, facts);
@@ -21,12 +21,20 @@ describe('Function ruleApply', () => {
     expect(error).toContain(ERROR_RULE_PARENTHESES_1);
   });
 
-  test(`case error 2`, () => {
+  test(`case error / condition / wrong`, () => {
     const condition = "12 ===";
     const facts = [];
     let [result, error] = ruleApply(condition, facts);
     expect(result).toEqual(false);
-    expect(error).not.toEqual(null);
+    expect(error).toContain("error in condition"); // "rule: 12 ===; error in condition"
+  });
+
+  test(`case error / condition / missing facts`, () => {
+    const condition = "cats > 12";
+    const facts = [];
+    let [result, error] = ruleApply(condition, facts);
+    expect(result).toEqual(false);
+    expect(error).toContain("missing facts:"); // "missing facts: cats"
   });
 
 })

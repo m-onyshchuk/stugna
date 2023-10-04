@@ -58,4 +58,25 @@ describe('StugnaES extended rule fields', () => {
     expect(factsAll.C).toEqual(20);
   });
 
+  test(`Rule.final`, () => {
+    let es = new StugnaES({toExplainMore: true});
+    es.rulesImport([
+      {
+        condition: "TRUE",
+        factName: "A",
+        factValue: 1,
+        priority: 1,
+        final: 3
+      },
+      {
+        condition: "TRUE",
+        factName: "A",
+        factValue: 20,
+        priority: 2,
+      },
+    ]);
+    let factsAll = es.factsAllAsMap(); // { A: }
+    expect(factsAll.A).toEqual(1);
+  });
+
 })

@@ -219,6 +219,17 @@ describe('StugnaES methods', () => {
     expect(rulesOutput.length).toEqual(0);
   });
 
+  test(`method rulesImport / no description / substitution`, () => {
+    let es = new StugnaES();
+    let rulesInput = [{
+      factName: "C",
+      factValue: 20,
+    }];
+    es.rulesImport(rulesInput);
+    let events = es.eventsAll();
+    expect(events[0].brief).toEqual('rule error');
+  });
+
   test(`method ruleAdd / validation error`, () => {
     let es = new StugnaES();
     es.ruleAdd(      {
