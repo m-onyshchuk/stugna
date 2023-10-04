@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.6
+* `All examples` section in README.md 
+
 ## 1.3.5
 * Rule.check bug fix
 
