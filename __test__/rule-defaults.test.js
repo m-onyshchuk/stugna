@@ -7,8 +7,8 @@ describe('Rule default fields', () => {
     let rule = new Rule('1=1', 'a', 'b');
     expect(rule.priority).toEqual(1);
     expect(rule.description.length).toBeGreaterThan(0);
-    expect(rule.factElse).toBeNull();
-    expect(rule.valueElse).toBeNull();
+    expect(rule.factElse).toBeUndefined();
+    expect(rule.valueElse).toBeUndefined();
   });
 
   test(`not use default values`, () => {

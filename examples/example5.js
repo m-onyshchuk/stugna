@@ -19,7 +19,7 @@ let facts = [
     description: "Initial value of hour"
   }
 ];
-es.factsImport(facts);
+es.factsImport(facts, false);
 
 let rules = [
   {
@@ -49,14 +49,21 @@ console.log (events);
   {
     name: 'noon',
     value: 'passed',
-    history: [ 'rule else: hour < 12 / noon / will be' ],
+    history: [ 'rule else: hour < 12 / {noon: will be} / {noon: passed}' ],
     changed: true
   }
 ]
 [
   { brief: 'fact add', subject: 'Initial value of hour' },
-  { brief: 'rule add', subject: 'hour < 12 / noon / will be' },
-  { brief: 'rule else', subject: 'hour < 12 / noon / will be' },
-  { brief: 'rules passed', more: 'Rules pass count is 1' }
+  {
+    brief: 'rule add',
+    subject: 'hour < 12 / {noon: will be} / {noon: passed}'
+  },
+  {
+    brief: 'rule else',
+    subject: 'hour < 12 / {noon: will be} / {noon: passed}'
+  },
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
+  { brief: 'rules passed', more: 'Rules pass count is 2' }
 ]
 */

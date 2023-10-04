@@ -370,12 +370,11 @@ class StugnaES {
         description: rule.description,
         final: rule.final
       }
-      // if (item.factNameElse === null) {
-      //   delete item.factNameElse;
-      // }
-      // if (item.factValueElse === null) {
-      //   delete item.factValueElse;
-      // }
+      for (let prop in item) {
+        if (item[prop] === undefined) {
+          delete item[prop];
+        }
+      }
       all.push(item);
     }
     return all;
@@ -476,7 +475,7 @@ class StugnaES {
         let factsAll = this._facts;
         factsMissing = [];
         if (!rule.checkWantedVariables(rule.variables, this._facts, factsMissing)) {
-          if (rule.missing === null) {
+          if (rule.missing === undefined) {
             if (this._toExplainMore) {
               this.eventAdd('rule skip', `missing fact in condition: ${factsMissing.join(', ')};`, rule.description);
             }

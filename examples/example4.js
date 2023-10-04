@@ -20,7 +20,7 @@ let facts = [
     description: "Initial value of season fact"
   }
 ];
-es.factsImport(facts);
+es.factsImport(facts, false);
 
 let rules = [
   {
@@ -67,21 +67,49 @@ console.log (facts);
 /*
 false
 [
-  { brief: 'fact add', more: 'Initial value of season fact' },
-  { brief: 'rule add', more: 'After winter comes spring' },
-  { brief: 'rule add', more: 'After spring comes summer' },
-  { brief: 'rule add', more: 'After summer comes autumn' },
-  { brief: 'rule add', more: 'After autumn comes winter' },
-  { brief: 'rule ok', more: 'After winter comes spring' },
-  { brief: 'rule ok', more: 'After spring comes summer' },
-  { brief: 'rule ok', more: 'After summer comes autumn' },
-  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'fact add', subject: 'Initial value of season fact' },
+  { brief: 'rule add', subject: 'After winter comes spring' },
+  { brief: 'rule add', subject: 'After spring comes summer' },
+  { brief: 'rule add', subject: 'After summer comes autumn' },
+  { brief: 'rule add', subject: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After winter comes spring' },
   { brief: 'rules passed', more: 'Rules pass count is 1' },
-  { brief: 'rule ok', more: 'After winter comes spring' },
-  { brief: 'rule ok', more: 'After spring comes summer' },
-  { brief: 'rule ok', more: 'After summer comes autumn' },
-  { brief: 'rule ok', more: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After spring comes summer' },
   { brief: 'rules passed', more: 'Rules pass count is 2' },
+  { brief: 'rule ok', subject: 'After summer comes autumn' },
+  { brief: 'rules passed', more: 'Rules pass count is 3' },
+  { brief: 'rule ok', subject: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After winter comes spring' },
+  { brief: 'rules passed', more: 'Rules pass count is 4' },
+  { brief: 'rule ok', subject: 'After spring comes summer' },
+  { brief: 'rules passed', more: 'Rules pass count is 5' },
+  { brief: 'rule ok', subject: 'After summer comes autumn' },
+  { brief: 'rules passed', more: 'Rules pass count is 6' },
+  { brief: 'rule ok', subject: 'After autumn comes winter' },
+  { brief: 'rule ok', subject: 'After winter comes spring' },
+  { brief: 'rules passed', more: 'Rules pass count is 7' },
+  { brief: 'rule ok', subject: 'After spring comes summer' },
+  { brief: 'rules passed', more: 'Rules pass count is 8' },
   { brief: 'rules error', more: 'Periodic rules detected' }
+]
+[
+  {
+    name: 'season',
+    value: 'summer',
+    history: [
+      'Initial value of season fact',
+      'rule ok: After winter comes spring',
+      'rule ok: After spring comes summer',
+      'rule ok: After summer comes autumn',
+      'rule ok: After autumn comes winter',
+      'rule ok: After winter comes spring',
+      'rule ok: After spring comes summer',
+      'rule ok: After summer comes autumn',
+      'rule ok: After autumn comes winter',
+      'rule ok: After winter comes spring',
+      'rule ok: After spring comes summer'
+    ],
+    changed: true
+  }
 ]
 */

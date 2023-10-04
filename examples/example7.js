@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Rule example with precondition
+ * Rule example with `precondition` option
  */
 // const {StugnaES} = require("stugna-es"); // for standalone run
 const {StugnaES} = require("../stugna-es"); // for local run
@@ -12,10 +12,11 @@ let facts = [
     value: 10,
   }
 ];
-es.factsImport(facts);
+es.factsImport(facts, false);
 
 let rules = [
   {
+    // try to comment line below to see difference
     precondition: "unknownFact = 42",
     condition: "x > 1",
     factName: "second",
@@ -29,8 +30,8 @@ es.rulesImport(rules);
 let factsAll = es.factsAllAsMap();
 console.log (factsAll);
 
-// Without precondition:
-// { x: 10, second: 'ok branch' }
-//
 // With precondition:
 // { x: 10 }
+//
+// Without precondition:
+// { x: 10, second: 'ok branch' }

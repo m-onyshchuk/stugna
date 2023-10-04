@@ -50,12 +50,12 @@ es.factsImport(facts);
 
 let factWanted = es.factGet(`transport`);
 console.log(factWanted);
+
 // {
 //   name: 'transport',
 //     value: 'skateboard',
 //   history: [
-//   "rule ok: wheels = 4 AND motor = 'missing' / transport / skateboard"
+//   "rule ok: wheels = 4 AND motor = 'missing' / {transport: skateboard}"
 // ],
 //   changed: true
 // }
-

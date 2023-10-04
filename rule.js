@@ -68,7 +68,7 @@ class Rule {
    * @param factValue {number|string|null}
    * @param priority {number}
    * @param description {string}
-   * @param factNameElse {string}
+   * @param factNameElse {string|undefined}
    * @param factValueElse {number|string|undefined}
    * @param final {number|undefined}
    * @param precondition {string|null|undefined}
@@ -81,11 +81,11 @@ class Rule {
               final, precondition, missing) {
     // init
     this.condition = condition;       // human raw readable text of rule
-    this.precondition = precondition !== null && precondition !== undefined ? precondition : null; // human raw readable text of precondition
+    this.precondition = precondition !== null ? precondition : undefined; // human raw readable text of precondition
     this.fact = factName;
     this.value = factValue;
-    this.factElse = factNameElse !== undefined ? factNameElse : null;
-    this.valueElse = factValueElse !== undefined ? factValueElse : null;
+    this.factElse = factNameElse !== null ? factNameElse : undefined;
+    this.valueElse = factValueElse !== null ? factValueElse : undefined;
     if (priority && priority > 0)
       this.priority = priority;
     else
@@ -97,8 +97,8 @@ class Rule {
     if (final && final >= 1 && final <= 3)
       this.final = final;
     else
-      this.final = null;
-    this.missing = missing !== undefined ? missing : null;
+      this.final = undefined;
+    this.missing = missing !== null ? missing : undefined;
     this.error = null;                // rule error
 
     this.precalc = [];                // reverse polish notation for rule precondition calculation
@@ -108,7 +108,7 @@ class Rule {
     let tokens = [];                  // parsed rule tokens
 
     // precondition
-    if (this.precondition !== null) {
+    if (this.precondition !== undefined) {
       [tokens, this.error] = this._tokenize(this.precondition, 'Precondition');
       if (this.error === null) {
         [this.precalc, this.error] = this._parse(tokens, 'Precondition');
@@ -220,7 +220,7 @@ class Rule {
    * @returns {boolean}
    */
   hasElse() {
-    return this.factElse != null;
+    return this.factElse !== null && this.factElse !== undefined;
   }
 
   /**

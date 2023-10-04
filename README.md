@@ -26,6 +26,7 @@ knowledge base can be serialized into/from one JSON file.
   - [eventsClear](#eventsclear)
 - [Periodic rules](#periodic-rules)
 - [ruleApply](#ruleapply)
+- [All examples](#all-examples)
 
 ## Usage example
 To illustrate how a small expert system can function with rules and facts, we will build one in this example. 
@@ -636,3 +637,16 @@ console.log(error);
 // false
 // Parentheses mismatched (1)
 ```
+
+## All examples
+Project repository contains set of examples:
+* [example1.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example1.js) - Usage example
+* [example2.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example2.js) - Example from "API details"
+* [example3.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example3.js) - Example for periodic rules, a simple case - one pass period
+* [example4.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example4.js) - Extended example for periodic rules, three pass period
+* [example5.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example5.js) - Rule example with `else` branch
+* [example6.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example6.js) - Rule example with `final` option 
+* [example7.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example7.js) - Rule example with `precondition` option  
+* [example8.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example8.js) - Rule example with `missing` option  
+ 
+ 

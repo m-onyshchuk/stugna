@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Rule example with final option
+ * Rule example with `final` option
  */
 // const {StugnaES} = require("stugna-es"); // for standalone run
 const {StugnaES} = require("../stugna-es"); // for local run
@@ -12,7 +12,7 @@ let facts = [
     value: 7,
   }
 ];
-es.factsImport(facts);
+es.factsImport(facts, false);
 
 let rules = [
   {
@@ -31,15 +31,29 @@ let rules = [
 ];
 es.rulesImport(rules);
 
+facts = es.factsAllAsArray();
+console.log (facts);
+
 let events = es.eventsAll();
 console.log (events);
 
-// {
-//   name: 'transport',
-//     value: 'skateboard',
-//   history: [
-//   "rule ok: wheels = 4 AND motor = 'missing' / transport / skateboard"
-// ],
-//   changed: true
-// }
+/*
+[
+  { name: 'x', value: 7, history: [ 'x: 7' ], changed: false },
+  {
+    name: 'y',
+    value: 3,
+    history: [ 'rule ok: x > 3 / {y: 3}' ],
+    changed: true
+  }
+]
+[
+  { brief: 'fact add', subject: 'x: 7' },
+  { brief: 'rule add', subject: 'x > 3 / {y: 3}' },
+  { brief: 'rule add', subject: 'x > 5 / {y: 5}' },
+  { brief: 'rule ok', subject: 'x > 3 / {y: 3}' },
+  { brief: 'rule final', more: 'Final rule happened' },
+  { brief: 'rules passed', more: 'Rules pass count is 1' }
+]
+*/
 
