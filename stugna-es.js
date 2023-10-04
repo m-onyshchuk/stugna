@@ -313,9 +313,6 @@ class StugnaES {
     ruleError = rule.getError();
     if (ruleError) {
       let subject = rule.description;
-      if (!subject) {
-        subject = Rule.createDescription(rule.condition, rule.factName, rule.factValue, rule.factNameElse, rule.factValueElse);
-      }
       this.eventAdd('rule error', ruleError, subject); // parsing errors
       return
     }
