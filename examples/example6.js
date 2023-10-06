@@ -31,22 +31,14 @@ let rules = [
 ];
 es.rulesImport(rules);
 
-facts = es.factsAllAsArray();
-console.log (facts);
+let factsAll = es.factsAllAsMap();
+console.log (factsAll);
+// { x: 7, y: 3 }
 
 let events = es.eventsAll();
 console.log (events);
 
 /*
-[
-  { name: 'x', value: 7, history: [ 'x: 7' ], changed: false },
-  {
-    name: 'y',
-    value: 3,
-    history: [ 'rule ok: x > 3 / {y: 3}' ],
-    changed: true
-  }
-]
 [
   { brief: 'fact add', subject: 'x: 7' },
   { brief: 'rule add', subject: 'x > 3 / {y: 3}' },
