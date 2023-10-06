@@ -32,38 +32,7 @@ let rules = [
 ];
 es.rulesImport(rules);
 
-facts = es.factsAllAsArray();
-console.log (facts);
+let factsAll = es.factsAllAsMap();
+console.log (factsAll);
 
-let events = es.eventsAll();
-console.log (events);
-
-/*
-[
-  {
-    name: 'hour',
-    value: 15,
-    history: [ 'Initial value of hour' ],
-    changed: false
-  },
-  {
-    name: 'noon',
-    value: 'passed',
-    history: [ 'rule else: hour < 12 / {noon: will be} / {noon: passed}' ],
-    changed: true
-  }
-]
-[
-  { brief: 'fact add', subject: 'Initial value of hour' },
-  {
-    brief: 'rule add',
-    subject: 'hour < 12 / {noon: will be} / {noon: passed}'
-  },
-  {
-    brief: 'rule else',
-    subject: 'hour < 12 / {noon: will be} / {noon: passed}'
-  },
-  { brief: 'rules passed', more: 'Rules pass count is 1' },
-  { brief: 'rules passed', more: 'Rules pass count is 2' }
-]
-*/
+// { hour: 15, noon: 'passed' }
