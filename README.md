@@ -148,7 +148,7 @@ let rule = {
 let isTrigger = true;
 es.ruleAdd(rule, isTrigger);
 ```
-* `precondition` - option string field with the same syntax as `condition`. Need to check rules condition or not. 
+* `precondition` - option string field with the same syntax as `condition`. It can be useful to check rules `condition` or not. 
    Details in [example7.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example7.js)  
 * `condition` - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
