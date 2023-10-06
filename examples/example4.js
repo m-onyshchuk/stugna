@@ -57,15 +57,11 @@ es.rulesImport(rules, isTrigger);
 
 let ordered = es.factsAreOrdered();
 console.log (ordered);
+// false
 
 let events = es.eventsAll();
 console.log (events);
-
-facts = es.factsAllAsArray();
-console.log (facts);
-
 /*
-false
 [
   { brief: 'fact add', subject: 'Initial value of season fact' },
   { brief: 'rule add', subject: 'After winter comes spring' },
@@ -92,6 +88,12 @@ false
   { brief: 'rules passed', more: 'Rules pass count is 8' },
   { brief: 'rules error', more: 'Periodic rules detected' }
 ]
+*/
+
+facts = es.factsAllAsArray();
+console.log (facts);
+
+/*
 [
   {
     name: 'season',
