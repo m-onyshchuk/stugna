@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.7
+* Documentation for `precondition` and `missing` fields in Rule object
+
 ## 1.3.6
 * `All examples` section in README.md 
 

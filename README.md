@@ -134,15 +134,22 @@ let es = new StugnaES(options);
 Add one rule to the system.
 ```js
 let rule = {
-  condition: "weight > 20000",
+  precondition: "is_water = TRUE",
+  condition: "is_underwater = TRUE OR is_yellow = TRUE",
+  missing: "TRUE",
   factName: "transport",
-  factValue: "bus",
-  priority: 10,
-  description: "Transport with weight more than 20 ton looks like a bus"
+  factValue: "submarine",
+  factNameElse: "transport",
+  factValueElse: "ship",
+  priority: 5,
+  final: 3,
+  description: "Is this water transport?"  
 };
 let isTrigger = true;
 es.ruleAdd(rule, isTrigger);
 ```
+* `precondition` - option string field with the same syntax as `condition`. Need to check rules condition or not. 
+   Details in [example7.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example7.js)  
 * `condition` - mandatory string field to describe condition for adding new fact to system. 
   Condition is a logic expression which contains:
   * fact names. Each not reserved word without single quotes is labeled as fact name. 
@@ -184,7 +191,9 @@ es.ruleAdd(rule, isTrigger);
   * `+` `-` `*` `/`
   * `<` `<=` `>` `>=` `=` `<>` `LIKE`
   * `AND` `OR` `NOT`
- 
+
+* `missing` - optional field with default values for missing facts. It works with `condition` only (not with `precondition`). 
+   Details in [example8.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example8.js) 
 * `factName` - name of new fact, which will be added if condition is met. Field must be a string without spaces, mandatory. 
 * `factValue` - value of new fact, which will be added if condition is met. Field can be boolean (`TRUE` or `FALSE`), 
   numerical (`integer` or `float`) or string, mandatory.
@@ -193,6 +202,7 @@ es.ruleAdd(rule, isTrigger);
   is undetermined.
 * `description` - short fact description for logging, string, optional
 * `factNameElse` - name of new fact, which will be added if condition is not met. Field must be a string without spaces, optional.
+  Details in [example5.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example5.js)  
 * `factValueElse` - value of new fact, which will be added if condition is not met. Field can be boolean (`TRUE` or `FALSE`),
   numerical (`integer` or `float`) or string, optional. 
 * `final` - This is an optional numerical field in a rule that can have one of three values: 1, 2, or 3. 
@@ -200,6 +210,8 @@ es.ruleAdd(rule, isTrigger);
   * 1 - stop evaluating the next rules if the current rule's condition is met.
   * 2 - stop evaluating the next rules if the current rule's condition is not met and the field factNameElse exists.
   * 3 - stop evaluating the next rules, regardless of any conditions.
+  
+  Details in [example6.js](https://github.com/m-onyshchuk/stugna/blob/main/examples/example6.js) 
 * `isTrigger` - if true, after new rule adding, rules check procedure starts automatically to generate new possible 
   facts due to given rules in the system. Parameter is boolean, optional, default value - `true`
 Fields `factNameElse` and `factValueElse` have to be both present or both absent in rule object. 
@@ -252,37 +264,40 @@ console.log (rulesAll);
 /*
 [
   {
-    condition: 'weight > 20000',
+    condition: 'is_underwater = TRUE OR is_yellow = TRUE',
     factName: 'transport',
-    factValue: 'transport',
-    priority: 10,
-    description: 'Transport with weight more than 20 ton looks like a bus'
+    factValue: 'submarine',
+    factNameElse: 'transport',
+    factValueElse: 'ship',
+    priority: 5,
+    description: 'Is this water transport?',
+    final: 1
   },
   {
     condition: "wheels = 4 AND motor = 'present'",
     factName: 'transport',
-    factValue: 'transport',
+    factValue: 'car',
     priority: 10,
     description: 'Transport with engine and 4 wheels is a car'
   },
   {
     condition: "wheels = 2 AND motor = 'present'",
     factName: 'transport',
-    factValue: 'transport',
+    factValue: 'motorcycle',
     priority: 10,
     description: 'Transport with engine and 2 wheels is a motorcycle'
   },
   {
     condition: "wheels = 4 AND motor = 'missing'",
     factName: 'transport',
-    factValue: 'transport',
+    factValue: 'skateboard',
     priority: 10,
     description: 'Transport with 4 wheels and without engine is a skateboard'
   },
   {
     condition: "wheels = 2 AND motor = 'missing'",
     factName: 'transport',
-    factValue: 'transport',
+    factValue: 'bike',
     priority: 10,
     description: 'Transport with 2 wheels and without engine is a bike'
   }
@@ -419,7 +434,7 @@ Returns all fact names which may be needed to determine asked fact.
 let name = "transport"; 
 let wanted = es.factGetPredecessorsWanted(name);
 console.log (wanted);
-// [ 'weight', 'wheels', 'motor' ]
+// [ 'is_underwater', 'is_yellow', 'wheels', 'motor' ]
 ```
 * `name` - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
@@ -431,7 +446,7 @@ Facts that can be obtained using rules are not included in the returned list.
 let name = "transport"; 
 let unknown = es.factGetPredecessorsUnknown(name);
 console.log (unknown);
-// [ 'weight' ]
+// [ 'is_underwater', 'is_yellow' ]
 ```
 * `name` - fact name for which it is necessary to find predecessors, string, mandatory
 * return value - array of fact names
@@ -457,10 +472,8 @@ let events = es.eventsAll();
 console.log (events);
 /*
 [
-  {
-    brief: 'rule add',
-    subject: 'Transport with weight more than 20 ton looks like a bus'
-  },
+  { brief: 'rule add', subject: 'Is this water transport?' },
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
   {
     brief: 'rule add',
     subject: 'Transport with engine and 4 wheels is a car'
@@ -477,26 +490,17 @@ console.log (events);
     brief: 'rule add',
     subject: 'Transport with 2 wheels and without engine is a bike'
   },
-  { 
-    brief: 'fact add', 
-    subject: 'Transport has 2 wheels' 
-  },
-  { 
-    brief: 'fact add', 
-    subject: 'This transport has 4 wheels' 
-  },
-  { 
-    brief: 'fact add', 
-    subject: 'This transport does`t have motor' 
-  },
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
+  { brief: 'fact add', subject: 'Transport has 2 wheels' },
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
+  { brief: 'fact add', subject: 'This transport has 4 wheels' },
+  { brief: 'fact add', subject: 'This transport does`t have motor' },
   {
     brief: 'rule ok',
     subject: 'Transport with 4 wheels and without engine is a skateboard'
   },
-  { 
-    brief: 'rules passed', 
-    more: 'Rules pass count is 1' 
-  }
+  { brief: 'rules passed', more: 'Rules pass count is 1' },
+  { brief: 'rules passed', more: 'Rules pass count is 2' }
 ]
 */
 ```

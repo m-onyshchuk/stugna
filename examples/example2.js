@@ -12,11 +12,16 @@ let es = new StugnaES(options);
 
 ///
 let rule = {
-  condition: "weight > 20000",
+  precondition: "is_water = TRUE",
+  condition: "is_underwater = TRUE OR is_yellow = TRUE",
+  missing: "TRUE",
   factName: "transport",
-  factValue: "bus",
-  priority: 10,
-  description: "Transport with weight more than 20 ton looks like a bus"
+  factValue: "submarine",
+  factNameElse: "transport",
+  factValueElse: "ship",
+  priority: 5,
+  final: 1,
+  description: "Is this water transport?"
 };
 let isTrigger = true;
 es.ruleAdd(rule, isTrigger);
