@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.8
+Tests coverage improvement 
+
 ## 1.3.7
 * Documentation for `precondition` and `missing` fields in Rule object
 

@@ -67,4 +67,13 @@ describe('Rule calculation', () => {
       expect(item.result).toEqual(result);
     });
   }
+
+  for (let item of calculations) {
+    test(`precondition: ${item.rule}`, () => {
+      let rule = new Rule('TRUE', 'fact-name', 'fact-value', 10, 'description',
+        null, null, null, item.rule);
+      let result = rule.check(item.facts, rule.precalc, true);
+      expect(item.result).toEqual(result);
+    });
+  }
 })
