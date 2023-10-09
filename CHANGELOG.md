@@ -1,6 +1,9 @@
 # Changelog
 Changes by versions
 
+## 1.3.9
+Lint error fix
+
 ## 1.3.8
 Tests coverage improvement 
 

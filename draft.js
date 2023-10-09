@@ -1,5 +1,6 @@
 'use strict';
-const {ruleApply, StugnaES} = require("./stugna-es");
+//const {ruleApply, StugnaES} = require("./stugna-es");
+const {StugnaES} = require("./stugna-es");
 /**
  * This is a work draft file for local tests
  */
