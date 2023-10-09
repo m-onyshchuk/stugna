@@ -1,0 +1,14 @@
+.github/
+.idea/
+.vscode/
+__test__/
+coverage/
+examples/
+node_modules/
+.eslintrc.json
+.gitignore
+.npmignore
+CHANGELOG.md
+draft.js
+README.md
+*~.*

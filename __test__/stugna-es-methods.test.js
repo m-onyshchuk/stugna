@@ -230,6 +230,18 @@ describe('StugnaES methods', () => {
     expect(events[0].brief).toEqual('rule error');
   });
 
+  test(`method rulesImport / no condition error + description`, () => {
+    let es = new StugnaES();
+    let rulesInput = [{
+      factName: "D",
+      factValue: 30,
+      description: 'description string'
+    }];
+    es.rulesImport(rulesInput);
+    let events = es.eventsAll();
+    expect(events[0].brief).toEqual('rule error');
+  });
+
   test(`method ruleAdd / validation error`, () => {
     let es = new StugnaES();
     es.ruleAdd(      {

@@ -3,8 +3,22 @@ const {StugnaES} = require("../stugna-es");
 
 describe('StugnaES extended rule fields', () => {
 
-  test(`Rule.precondition wrong`, () => {
+  test(`Rule.precondition wrong / to explain`, () => {
     let es = new StugnaES({toExplainMore: true});
+    es.ruleAdd(      {
+      precondition: "unknownFact = 42",
+      condition: "x > 1",
+      factName: "second",
+      factValue: "ok branch",
+      factNameElse: "second",
+      factValueElse: "else branch",
+    });
+    let factsAll = es.factsAllAsMap(); // { x: 10 }
+    expect(factsAll.second).toBeUndefined();
+  });
+
+  test(`Rule.precondition wrong / no explanation`, () => {
+    let es = new StugnaES();
     es.ruleAdd(      {
       precondition: "unknownFact = 42",
       condition: "x > 1",
@@ -29,8 +43,20 @@ describe('StugnaES extended rule fields', () => {
     expect(factsAll.fact).toBeDefined();
   });
 
-  test(`Rule.precondition not met`, () => {
+  test(`Rule.precondition not met / to explain`, () => {
     let es = new StugnaES({toExplainMore: true});
+    es.ruleAdd(      {
+      precondition: "FALSE",
+      condition: "TRUE",
+      factName: "fact",
+      factValue: "ok",
+    });
+    let factsAll = es.factsAllAsMap();
+    expect(factsAll.fact).toBeUndefined();
+  });
+
+  test(`Rule.precondition not met / no explanation`, () => {
+    let es = new StugnaES();
     es.ruleAdd(      {
       precondition: "FALSE",
       condition: "TRUE",
